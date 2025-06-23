@@ -117,7 +117,7 @@ export const DataValidation = () => {
       setMessage(' Users data saved successfully!');
       setMessage(` Saving corex validation data...`);
 
-      const read = JSON.parse(
+      const authentication = JSON.parse(
         await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}authentication.json`)
       );
 
@@ -126,7 +126,7 @@ export const DataValidation = () => {
         JSON.stringify({
           validation_date: new Date().toISOString(),
           latest_update: new Date().toISOString(),
-          latest_user: 'Corex Mobile App',
+          latest_user: authentication.user.id,
         })
       );
     } catch (error) {
