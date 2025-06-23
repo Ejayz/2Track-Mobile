@@ -46,7 +46,88 @@ export const DataValidation = () => {
       setMessage(' Saving article data...');
       await FileSystem.writeAsStringAsync(
         `${FileSystem.documentDirectory}tbl_article.json`,
-        JSON.stringify(data.articles)
+        JSON.stringify(data.article)
+      );
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_article_max`,
+        JSON.stringify(data.articleMax)
+      );
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_article_min`,
+        JSON.stringify(data.articleMin)
+      );
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_article_nominal`,
+        JSON.stringify(data.articleNominal)
+      );
+      setMessage(' Article data saved successfully!');
+      setMessage(` Saving customer data...`);
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_customer.json`,
+        JSON.stringify(data.customer)
+      );
+      setMessage(' Customer data saved successfully!');
+      setMessage(` Saving assignee history data...`);
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_assignee_history.json`,
+        JSON.stringify(data.assigneeHistory)
+      );
+      setMessage(' Assignee history data saved successfully!');
+      setMessage(` Saving laboratory data...`);
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_laboratory.json`,
+        JSON.stringify(data.laboratory)
+      );
+      setMessage(' Laboratory data saved successfully!');
+      setMessage(` Saving measurement data...`);
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_measurement.json`,
+        JSON.stringify(data.measurement)
+      );
+      setMessage(' Measurement data saved successfully!');
+      setMessage(` Saving measurement history data...`);
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_measurement_history.json`,
+        JSON.stringify(data.measurementHistory)
+      );
+      setMessage(' Measurement history data saved successfully!');
+      setMessage(` Saving orders form data...`);
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_orders_form.json`,
+        JSON.stringify(data.ordersForm)
+      );
+      setMessage(' Orders form data saved successfully!');
+      setMessage(` Saving production data...`);
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_production.json`,
+        JSON.stringify(data.production)
+      );
+      setMessage(' Production data saved successfully!');
+      setMessage(` Saving proofing data...`);
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_proofing.json`,
+        JSON.stringify(data.proofing)
+      );
+      setMessage(' Proofing data saved successfully!');
+      setMessage(` Saving users data...`);
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}tbl_users.json`,
+        JSON.stringify(data.users)
+      );
+      setMessage(' Users data saved successfully!');
+      setMessage(` Saving corex validation data...`);
+
+      const read = JSON.parse(
+        await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}authentication.json`)
+      );
+
+      await FileSystem.writeAsStringAsync(
+        `${FileSystem.documentDirectory}corex-validation.json`,
+        JSON.stringify({
+          validation_date: new Date().toISOString(),
+          latest_update: new Date().toISOString(),
+          latest_user: 'Corex Mobile App',
+        })
       );
     } catch (error) {
       console.log('Error saving corex-validation.json:', error);

@@ -70,7 +70,7 @@ export const LoginScreen = () => {
           if (!result) {
           } else {
             FileSystem.writeAsStringAsync(
-              `${FileSystem.documentDirectory}/authentication.txt`,
+              `${FileSystem.documentDirectory}authentication.json`,
               JSON.stringify(result)
             )
               .then(() => {
