@@ -1,12 +1,9 @@
-import { ScreenContent } from 'components/ScreenContent';
-import { StatusBar } from 'expo-status-bar';
-
 import './global.css';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoginScreen } from 'components/LoginScreen';
 import { createStaticNavigation } from '@react-navigation/native';
 
-const RootStack= createStackNavigator({
+const RootStack= createNativeStackNavigator({
   initialRouteName: 'LoginScreen',
   screens:{
     LoginScreen:{
