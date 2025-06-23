@@ -9,13 +9,14 @@ import {
   Alert,
 } from 'react-native';
 import { Checkbox } from '@futurejj/react-native-checkbox';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Formik, FormikHelpers, FormikValues } from 'formik';
 import * as Yup from 'yup';
 import { InputText } from './FormComponents/InputText';
 import { InputPassword } from './FormComponents/InputPassword';
 import Feather from '@expo/vector-icons/Feather';
 import * as FileSystem from 'expo-file-system';
+import { useNavigation } from '@react-navigation/native';
 
 const corexlogo = require('../assets/img/corexlogo.png');
 
@@ -24,6 +25,33 @@ export const LoginScreen = () => {
   const toggleCheckbox = () => {
     setChecked(!checked);
   };
+
+  const navigation: any = useNavigation();
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      try {
+        const fileUri = `${FileSystem.documentDirectory}/authentication.txt`;
+        const fileExists = await FileSystem.getInfoAsync(fileUri);
+        if (fileExists.exists) {
+          const sessionData = await FileSystem.readAsStringAsync(fileUri);
+          console.log('Session Data:', sessionData);
+          Alert.alert('Welcome Back', 'You are already logged in.', [
+            {
+              text: 'OK',
+              style: 'default',
+              isPreferred: true,
+              onPress: () => {
+                navigation.navigate('DataValidation');
+              },
+            },
+          ]);
+        }
+      } catch (error) {
+        console.error('Error checking authentication:', error);
+      }
+    };
+    checkAuthentication();
+  }, []);
 
   return (
     <Formik
