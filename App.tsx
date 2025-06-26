@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoginScreen } from 'components/LoginScreen';
 import { createStaticNavigation } from '@react-navigation/native';
 import { DataValidation } from 'components/DataValidation';
+import { Dashboard } from 'components/Dashboard';
 
 const RootStack = createNativeStackNavigator({
   initialRouteName: 'LoginScreen',
@@ -15,6 +16,12 @@ const RootStack = createNativeStackNavigator({
     },
     DataValidation: {
       screen: DataValidation,
+      options: {
+        headerShown: false,
+      },
+    },
+    Dashboard: {
+      screen: Dashboard, // Placeholder for Dashboard screen
       options: {
         headerShown: false,
       },

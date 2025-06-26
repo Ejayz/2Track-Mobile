@@ -30,7 +30,7 @@ export const LoginScreen = () => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const fileUri = `${FileSystem.documentDirectory}/authentication.txt`;
+        const fileUri = `${FileSystem.documentDirectory}authentication.json`;
         const fileExists = await FileSystem.getInfoAsync(fileUri);
         if (fileExists.exists) {
           const sessionData = await FileSystem.readAsStringAsync(fileUri);
@@ -71,7 +71,7 @@ export const LoginScreen = () => {
           } else {
             FileSystem.writeAsStringAsync(
               `${FileSystem.documentDirectory}authentication.json`,
-              JSON.stringify(result)
+              result
             )
               .then(() => {
                 Alert.alert(
@@ -82,7 +82,11 @@ export const LoginScreen = () => {
                       text: 'OK',
                       style: 'default',
                       isPreferred: true,
-                      onPress: () => console.log('OK Pressed'),
+                      onPress: () => {
+                        navigation.navigate('DataValidation', {
+                          sessionData: result,
+                        });
+                      },
                     },
                   ]
                 );
@@ -101,7 +105,7 @@ export const LoginScreen = () => {
             <Text className="mt-2 text-lg text-gray-600">Please log in to continue</Text>
             <InputText
               values={values.email}
-              handleChange={handleChange}
+              handleChange={handleChange('email')}
               errors={errors.email}
               touched={touched.email}
               placeholder="Email"

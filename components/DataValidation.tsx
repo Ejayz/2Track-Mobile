@@ -1,18 +1,19 @@
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { useEffect, useState } from 'react';
 import * as FileSystem from 'expo-file-system';
+import { useNavigation } from '@react-navigation/native';
 
 export const DataValidation = () => {
   const [message, setMessage] = useState<string>('Data validation in progress...');
-
+  const navigation: any = useNavigation();
   const retrieveCorexData = async () => {
     let headersList = {
       Accept: '*/*',
       'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
     };
 
-    let response = await fetch('http://localhost:3000/api/mobile/copy_data', {
+    let response = await fetch('https://www.sledgehammerdevelopmentteam.uk/api/mobile/copy_data', {
       method: 'POST',
       headers: headersList,
     });
@@ -39,7 +40,6 @@ export const DataValidation = () => {
     }
 
     let data = await response.json();
-    console.log('Corex data retrieved:', data);
     setMessage(` Corex data retrieved successfully! Saving data locally...`);
 
     try {
@@ -129,6 +129,19 @@ export const DataValidation = () => {
           latest_user: authentication.user.id,
         })
       );
+      setMessage(' Corex validation data saved successfully!');
+      Alert.alert('Data Validation', 'Corex data has been successfully validated and saved.', [
+        {
+          text: 'OK',
+          style: 'default',
+          isPreferred: true,
+          onPress: () => {
+            navigation.navigate('Dashboard', {
+              sessionData: authentication,
+            });
+          },
+        },
+      ]);
     } catch (error) {
       console.log('Error saving corex-validation.json:', error);
       setMessage(' Error saving data. Please try again later.');
@@ -144,7 +157,7 @@ export const DataValidation = () => {
       } catch (error) {
         console.log('Error reading corex-validation.json:', error);
         setMessage(' No data found . Retreiving data...');
-        // retrieveCorexData();
+        retrieveCorexData();
       }
     };
 

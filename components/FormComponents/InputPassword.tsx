@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TextInput, Text } from 'react-native';
-import Feather from "@expo/vector-icons/Feather";
+import Feather from '@expo/vector-icons/Feather';
 
 export const InputPassword = ({
   values,
@@ -17,6 +17,10 @@ export const InputPassword = ({
 }: any) => {
   return (
     <View className="w-full mt-4 ">
+      <View
+        className={`${values == '' ? 'hidden' : 'block'} flex-row items-center justify-between`}>
+        <Text className="text-gray-600">{placeholder}</Text>
+      </View>
       <TextInput
         className="w-full p-3 mt-4 border border-gray-300 rounded-lg"
         placeholder={placeholder || 'Password'}
