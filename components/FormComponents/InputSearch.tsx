@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Children } from 'react';
 import { View, TextInput, Text, ScrollView, Alert } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 
@@ -11,7 +11,8 @@ export const InputSearch = ({
   autoCorrect,
   autoComplete,
   onChangeText,
-  results = [],
+  isSearching,
+  children,
 }: any) => {
   return (
     <View className="w-full mt-4">
@@ -27,16 +28,17 @@ export const InputSearch = ({
         autoCapitalize={autoCapitalize || 'none'}
         autoCorrect={false}
         value={values}
+        onPress={() => {
+          onChangeText('');
+        }}
       />
-      {results.length !== 0 && (
-        <ScrollView className="mt-2 max-h-40">
-          {results.map((result: any, index: number) => (
-            <View key={index} className="flex-row items-center p-2 border-b border-gray-200">
-              <Feather name="search" size={20} color="gray" />
-              <Text className="ml-2 text-gray-700">{result.name}</Text>
-            </View>
-          ))}
-        </ScrollView>
+      {isSearching ? (
+        <View className="flex-row items-center justify-center mt-2">
+          <Feather name="loader" size={20} color="gray" className='animate-spin' />
+          <Text className="ml-2 text-gray-600">Searching...</Text>
+        </View>
+      ) : (
+        <ScrollView className="mt-2 max-h-40">{children}</ScrollView>
       )}
     </View>
   );
