@@ -36,6 +36,8 @@ export const DataValidation = () => {
         return;
       }
       alert(`Error: Something went wrong. Status code: ${response.status}`);
+      await FileSystem.deleteAsync(`${FileSystem.documentDirectory}authentication.json`)
+      navigation.navigate("LoginScreen")
       return;
     }
 

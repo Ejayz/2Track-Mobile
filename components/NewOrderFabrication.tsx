@@ -158,7 +158,7 @@ const [isProductNameSearching,setIsProductNameSearching]= useState(false)
             <View className="mt-4">
               <Button
                 onPress={handleSubmit as unknown as (e: GestureResponderEvent) => void}
-                title="Submit Order"
+                title="Submit Order Fabrication"
               />
             </View>
           </View>
