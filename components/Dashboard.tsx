@@ -11,7 +11,6 @@ export const Dashboard = () => {
   const Tab = createBottomTabNavigator();
 
   return (
-    // <View className="items-center justify-center flex-1 w-full h-full text-black bg-blue-900">
     <Tab.Navigator initialRouteName="NewOrderFabrication">
       <Tab.Screen
         name="DashboardUI"
@@ -42,7 +41,7 @@ export const Dashboard = () => {
       />
       <Tab.Screen
         name="Settings"
-        component={Settings} 
+        component={Settings}
         options={{
           headerShown: false,
           tabBarLabel: 'Settings',
@@ -50,6 +49,5 @@ export const Dashboard = () => {
         }}
       />
     </Tab.Navigator>
- 
   );
 };
