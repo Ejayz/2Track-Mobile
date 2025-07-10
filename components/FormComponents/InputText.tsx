@@ -17,11 +17,11 @@ export const InputText = ({
   return (
     <View className="w-full mt-4 ">
       <View
-        className={`${values == '' ? 'hidden' : 'block'} flex-row items-center justify-between`}>
+        className={`${values == '' ? 'hidden' : 'block'} flex-row items-center text-black justify-between`}>
         <Text className="text-gray-600">{placeholder}</Text>
       </View>
       <TextInput
-        className="w-full p-3 mt-4 border border-gray-300 rounded-lg"
+        className="w-full p-3 mt-4 text-black border border-gray-300 rounded-lg"
         placeholder={placeholder}
         value={values}
         onChangeText={handleChange}

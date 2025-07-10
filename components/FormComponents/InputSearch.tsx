@@ -21,7 +21,7 @@ export const InputSearch = ({
         <Text className="text-gray-600">{placeholder}</Text>
       </View>
       <TextInput
-        className="w-full p-3 mt-4 border border-gray-300 rounded-lg"
+        className="w-full p-3 mt-4 text-black border border-gray-300 rounded-lg"
         placeholder={placeholder}
         onChangeText={onChangeText}
         keyboardType={keyboardType || 'default'}
