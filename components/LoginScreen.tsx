@@ -30,10 +30,34 @@ export const LoginScreen = () => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const fileUri = `${FileSystem.documentDirectory}authentication.json`;
-        const fileExists = await FileSystem.getInfoAsync(fileUri);
+        const authenticationUri = `${FileSystem.documentDirectory}authentication.json`;
+        const fileExists = await FileSystem.getInfoAsync(authenticationUri);
         if (fileExists.exists) {
-          const sessionData = await FileSystem.readAsStringAsync(fileUri);
+          const sessionData = await FileSystem.readAsStringAsync(authenticationUri);
+          console.log('Session Data:', sessionData);
+          if (sessionData === '{"domain":"2track-qcms.vercel.app","port":""}') {
+            Alert.alert(
+              'Authentication Error',
+              'Previous authentication attempt failed. Please log in again.',
+              [
+                {
+                  text: 'OK',
+                  style: 'default',
+                  isPreferred: true,
+                  onPress: () => {
+                    FileSystem.deleteAsync(authenticationUri)
+                      .then(() => {
+                        console.log('Corrupted session data deleted successfully');
+                      })
+                      .catch((error) => {
+                        console.error('Error deleting corrupted session data:', error);
+                      });
+                  },
+                },
+              ]
+            );
+            return;
+          }
           console.log('Session Data:', sessionData);
           Alert.alert('Welcome Back', 'You are already logged in.', [
             {
@@ -41,7 +65,9 @@ export const LoginScreen = () => {
               style: 'default',
               isPreferred: true,
               onPress: () => {
-                navigation.navigate('DataValidation');
+                navigation.navigate('Dashboard', {
+                  sessionData: JSON.parse(sessionData),
+                });
               },
             },
           ]);
@@ -50,7 +76,50 @@ export const LoginScreen = () => {
         console.error('Error checking authentication:', error);
       }
     };
-    checkAuthentication();
+    const checkConfiguration = async () => {
+      try {
+        const configUri = `${FileSystem.documentDirectory}configuration.json`;
+        const configExists = await FileSystem.getInfoAsync(configUri);
+        if (!configExists.exists) {
+          navigation.replace('ConfigurationSetup');
+        } else {
+          const configData = await FileSystem.readAsStringAsync(configUri);
+          const parsedConfig = JSON.parse(configData);
+          console.log('Configuration Data:');
+          if (!parsedConfig.api_url) {
+            Alert.alert(
+              'Configuration Error',
+              'Configuration file is missing required fields. Please set up your configuration again.',
+              [
+                {
+                  text: 'OK',
+                  style: 'default',
+                  isPreferred: true,
+                  onPress: () => {
+                    FileSystem.deleteAsync(configUri)
+
+                      .then(() => {
+                        console.log('Corrupted configuration data deleted successfully');
+                        navigation.replace('ConfigurationSetup');
+                      })
+                      .catch((error) => {
+                        console.error('Error deleting corrupted configuration data:', error);
+                        navigation.replace('ConfigurationSetup');
+                      });
+                  },
+                },
+              ]
+            );
+          } else {
+            checkAuthentication();
+          }
+        }
+      } catch (error) {
+        console.error('Error checking configuration:', error);
+      }
+    };
+
+    checkConfiguration();
   }, []);
 
   return (
@@ -68,6 +137,10 @@ export const LoginScreen = () => {
         const result = await authenticate(values.email, values.password);
         if (result) {
           if (!result) {
+            Alert.alert(
+              'Server connection failed.',
+              'Please check your internet or configuration and try again.'
+            );
           } else {
             FileSystem.writeAsStringAsync(
               `${FileSystem.documentDirectory}authentication.json`,
@@ -83,7 +156,7 @@ export const LoginScreen = () => {
                       style: 'default',
                       isPreferred: true,
                       onPress: () => {
-                        navigation.navigate('DataValidation', {
+                        navigation.navigate('Dashboard', {
                           sessionData: result,
                         });
                       },
@@ -164,7 +237,11 @@ const styles = StyleSheet.create({
 });
 
 const authenticate = async (email: string, password: string) => {
+  const configUri = `${FileSystem.documentDirectory}configuration.json`;
   try {
+    const configData = await FileSystem.readAsStringAsync(configUri);
+    const parsedConfig = JSON.parse(configData);
+
     let headersList = {
       Accept: '*/*',
       'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
@@ -176,7 +253,7 @@ const authenticate = async (email: string, password: string) => {
       password: password,
     });
 
-    let response = await fetch('https://sledgehammerdevelopmentteam.uk/api/authentication', {
+    let response = await fetch(`${parsedConfig.api_url}/api/authentication`, {
       method: 'POST',
       body: bodyContent,
       headers: headersList,
@@ -206,7 +283,11 @@ const authenticate = async (email: string, password: string) => {
     console.log(data);
     return data;
   } catch (error) {
-    console.error('Error during authentication:', error);
-    return 'An error occurred while trying to authenticate. Please try again later.';
+    console.log('Error during authentication:', error);
+    Alert.alert(
+      'Network Error',
+      'Unable to connect to the server. Please check your internet connection and try again.'
+    );
+    return false;
   }
 };
