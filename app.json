@@ -9,7 +9,14 @@
     "experiments": {
       "tsconfigPaths": true
     },
-    "plugins": [],
+    "plugins": [
+      [
+        "expo-navigation-bar",
+        {
+          "visibility": "hidden"
+        }
+      ]
+    ],
     "orientation": "portrait",
     "icon": "./assets/corexlogo.png",
     "userInterfaceStyle": "light",
@@ -18,9 +25,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },

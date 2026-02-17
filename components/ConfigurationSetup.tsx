@@ -62,9 +62,9 @@ export const ConfigurationSetup = () => {
                 text: 'Save',
                 onPress: async () => {
                   const fileUri = `${FileSystem.documentDirectory}configuration.json`;
-
+                  console.log("Dev",__DEV__)
                   const configData = {
-                    api_url: `https://${values.domain}${values.port ? `:${values.port}` : ''}`,
+                    api_url: `${__DEV__?"http://":"https://"}${values.domain}${values.port ? `:${values.port}` : ''}`,
                     created_at: new Date().toISOString(),
                   };
                   await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(configData));

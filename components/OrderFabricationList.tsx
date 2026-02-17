@@ -1,10 +1,179 @@
-import { View, Text } from 'react-native';
-
+import { useNavigation } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { View, Text, ScrollView, Pressable, StatusBar, BackHandler, Alert } from 'react-native';
+import configRetriver from 'utils/configRetriver';
+import Feather from '@expo/vector-icons/Feather';
+import { SearchState } from './FormComponents/SearchState';
+import { DatePickerModal } from 'react-native-paper-dates';
 export const OrderFabricationList = () => {
+  const navigation: any = useNavigation();
+
+  const [configurationData, setAuthenticationData] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchDateFrom, setSearchDateFrom] = useState<any>();
+  const [searchDateTo, setSearchDateTo] = useState<any>();
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  useEffect(() => {
+    const fetchAuthenticationData = async () => {
+      const ret = await configRetriver();
+      console.log('Fetched authentication datas:', ret);
+      setAuthenticationData(ret);
+    };
+    fetchAuthenticationData();
+  }, []);
+
+  const {
+    data: ofdata,
+    isLoading: ofisLoading,
+    error: oferror,
+    isFetching: ofisFetching,
+  } = useQuery({
+    queryKey: [
+      'order-fabrication-list',
+      configurationData !== null && searchQuery,
+      searchDateFrom,
+      searchDateTo,
+    ],
+    queryFn: async () => {
+      console.log(
+        'Configuration data inside query function:',
+        configurationData.api_url,
+        searchDateFrom,
+        searchDateTo
+      );
+      let headersList = {
+        Accept: '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+      };
+      const url =
+        searchDateFrom && searchDateTo
+          ? `${configurationData.api_url}/api/v1/get_order?page=1&search=${searchQuery}&date_from=${searchDateFrom}&date_to=${searchDateTo}&limit=10`
+          : `${configurationData.api_url}/api/v1/get_order?page=1&search=${searchQuery}&limit=10`;
+      let response = await fetch(url, {
+        method: 'GET',
+        headers: headersList,
+      });
+
+      let data = await response.json();
+      console.log('Fetched order fabrication data:', data);
+      return data;
+    },
+  });
+
+  const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+    navigation.replace('Dashboard');
+    return true;
+  });
+
   return (
-    <View className="items-center justify-center flex-1 bg-white">
-      <Text className="text-2xl font-bold text-gray-800">Order Fabrication List</Text>
-      <Text className="mt-4 text-gray-600">This feature is under development.</Text>
+    <View className="items-center justify-center flex-1 w-full h-full text-black bg-blue-900">
+      <View className="flex flex-row items-center justify-between mt-8">
+        <Text className="text-xl font-bold text-white">Order Fabrication Management</Text>
+      </View>
+      <View className="flex flex-row items-center justify-between w-11/12 mt-4">
+        <SearchState
+          placeholder="Search order fabrications..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <Pressable
+          onPress={() => {
+            setShowDatePicker(true);
+          }}
+          className="flex items-center justify-center flex-1 w-32 h-12 mx-1 text-center rounded-lg bg-blue-custom-1 ">
+          <Text className="w-full text-lg font-medium text-center text-white ">Date</Text>
+        </Pressable>
+
+        <DatePickerModal
+          locale="en"
+          mode="range"
+          visible={showDatePicker}
+          onDismiss={() => setShowDatePicker(false)}
+          startDate={new Date()}
+          endDate={new Date()}
+          onConfirm={({ startDate, endDate }:any) => {
+            console.log('Selected date range:', startDate, endDate);
+            setShowDatePicker(false);
+
+            setSearchDateFrom(new Date(startDate).toISOString().split('T')[0]);
+            setSearchDateTo(new Date(endDate).toISOString().split('T')[0]);
+          }}
+        />
+        <Pressable
+          onPress={() => {
+            navigation.replace('Dashboard');
+          }}
+          className="flex items-center justify-center flex-1 w-24 h-12 mx-1 my-auto text-center rounded-lg bg-blue-custom-1 ">
+          <Text className="w-full text-lg font-medium text-center text-white ">Add</Text>
+        </Pressable>
+      </View>
+      <ScrollView className="w-full p-4 text-left">
+        {ofisLoading || ofisFetching ? (
+          <View className="flex-row items-center justify-center mt-2">
+            <Feather name="loader" size={24} color={'white'} className="ml-2 animate-spin" />
+            <Text>Loading customer data...</Text>
+          </View>
+        ) : oferror ? (
+          <Text>Error fetching customer data: {oferror.message}</Text>
+        ) : (
+          ofdata && (
+            <View>
+              {ofdata.data.map((customer: any) => {
+                return (
+                  <View key={customer.id} className="w-full p-2 mt-2 bg-white rounded-lg shadow ">
+                    <Text className="text-lg font-medium text-gray-800">
+                      {customer.order_fabrication_control}
+                    </Text>
+                    <Text className="text-sm text-gray-600">
+                      Company:{customer.tbl_customer.company_name}
+                    </Text>
+                    <Text className="text-sm text-gray-600">
+                      Designation: {customer.tbl_article?.designation_article ?? 'N/A'}
+                    </Text>
+                    <Text className="text-sm text-gray-600">
+                      Pallete: {customer.pallet_count ?? 'N/A'}
+                    </Text>
+                    <View className="flex flex-row items-start ">
+                      <Text className="flex-1 text-sm text-gray-600">
+                        Entry Date: {customer.entry_date_time ?? 'N/A'}
+                      </Text>
+                      <Text className="flex-1 text-sm text-gray-600">
+                        Exit Date: {customer.exit_date_time ?? 'N/A'}
+                      </Text>
+                    </View>
+                    <View className="flex flex-row items-start ">
+                      <Pressable
+                        onPress={() => {
+                          navigation.navigate('OrderFabricationDetails', {
+                            orderFabricationId: customer.id,
+                          });
+                        }}
+                        className="flex items-center justify-center flex-1 w-32 h-10 mx-4 mt-2 text-center rounded-lg bg-blue-custom-1 ">
+                        <Text className="w-full text-sm font-medium text-center text-white ">
+                          Edit
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={() => {
+                          navigation.navigate('OrderFabricationDetails', {
+                            orderFabricationId: customer.id,
+                          });
+                        }}
+                        className="flex items-center justify-center flex-1 w-32 h-10 mx-4 mt-2 text-center border-2 border-red-500 border-solid rounded-lg ">
+                        <Text className="w-full text-sm font-medium text-center text-black ">
+                          Remove
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          )
+        )}
+      </ScrollView>
     </View>
   );
 };

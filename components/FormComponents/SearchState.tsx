@@ -15,13 +15,13 @@ export const SearchState = ({
   children,
 }: any) => {
   return (
-    <View className="mt-4 w-1/2">
+    <View className="w-1/2 ">
       {/* <View
         className={`${values == '' ? 'hidden' : 'block'} flex-row items-center justify-between`}>
         <Text className="text-gray-600">{placeholder}</Text>
       </View> */}
       <TextInput
-        className="mt-4 w-full rounded-lg border border-gray-300 p-3 text-black"
+        className="w-full p-3 text-black border border-gray-300 rounded-lg "
         placeholder={placeholder}
         onChangeText={onChangeText}
         keyboardType={keyboardType || 'default'}

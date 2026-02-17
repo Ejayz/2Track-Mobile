@@ -1,4 +1,4 @@
-import { View, Text, Button, Image, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Button, Image, StyleSheet, Pressable, StatusBar } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import authenticationRetriver from 'utils/authenticationRetriver';
 import { useEffect, useState } from 'react';
@@ -44,7 +44,11 @@ export const DashboardUI = () => {
             Article Creation
           </Text>
         </Pressable>
-        <Pressable className="flex flex-row w-3/4 h-auto p-2 text-center rounded-lg bg-blue-custom-1 ">
+        <Pressable
+          className="flex flex-row w-3/4 h-auto p-2 text-center rounded-lg bg-blue-custom-1 "
+          onPress={() => {
+            navigation.replace('OrderFabricationList');
+          }}>
           <Text className="w-auto mx-auto text-lg font-medium text-center text-white">
             Order Fabrication Management
           </Text>

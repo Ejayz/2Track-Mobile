@@ -7,6 +7,8 @@ import { Dashboard } from 'components/Dashboard';
 import { ConfigurationSetup } from 'components/ConfigurationSetup';
 import { CustomerManagement } from 'components/CustomerManagement';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { OrderFabricationList } from 'components/OrderFabricationList';
+import { StatusBar } from 'react-native';
 
 const RootStack = createNativeStackNavigator({
   initialRouteName: 'LoginScreen',
@@ -41,6 +43,12 @@ const RootStack = createNativeStackNavigator({
         headerShown: false,
       },
     },
+    OrderFabricationList: {
+      screen: OrderFabricationList, // Placeholder for OrderFabricationList screen
+      options: {
+        headerShown: false,
+      },
+    },
   },
 });
 
@@ -50,6 +58,7 @@ export default function App() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
+        <StatusBar barStyle="light-content" backgroundColor="#1E3A8A" hidden={true} />
         <Navigation />
       </QueryClientProvider>
     </>

@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { NewOrderFabrication } from './NewOrderFabrication';
 import { OrderFabricationList } from './OrderFabricationList';
 import { createStaticNavigation } from '@react-navigation/native';
@@ -7,22 +7,20 @@ import { DashboardUI } from './DashboardUI';
 import { Feather } from '@expo/vector-icons';
 import { Settings } from './Settings';
 
-export const Dashboard = ({route}:any) => {
-  const params = route?.params;
-  console.log('Dashboard received params:', params);
+export const Dashboard = () => {
   const Tab = createBottomTabNavigator();
 
   return (
-    <Tab.Navigator initialRouteName="DashboardUI" >
+    
+    <Tab.Navigator initialRouteName="DashboardUI">
+      
       <Tab.Screen
         name="DashboardUI"
         component={DashboardUI}
-        initialParams={route}
         options={{
           headerShown: false,
           tabBarLabel: 'Menu',
           tabBarIcon: () => <Feather name="menu" size={24} color="black" />,
-
         }}
       />
       {/* <Tab.Screen

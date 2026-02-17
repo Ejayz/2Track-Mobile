@@ -65,7 +65,7 @@ export const LoginScreen = () => {
               style: 'default',
               isPreferred: true,
               onPress: () => {
-                navigation.navigate('Dashboard', {
+                navigation.replace('Dashboard', {
                   sessionData: JSON.parse(sessionData),
                 });
               },
@@ -83,9 +83,10 @@ export const LoginScreen = () => {
         if (!configExists.exists) {
           navigation.replace('ConfigurationSetup');
         } else {
+  
           const configData = await FileSystem.readAsStringAsync(configUri);
           const parsedConfig = JSON.parse(configData);
-          console.log('Configuration Data:');
+          console.log('Configuration Data:',configData);
           if (!parsedConfig.api_url) {
             Alert.alert(
               'Configuration Error',
@@ -252,13 +253,13 @@ const authenticate = async (email: string, password: string) => {
       email: email,
       password: password,
     });
-
+    console.log(parsedConfig.api_url)
     let response = await fetch(`${parsedConfig.api_url}/api/authentication`, {
       method: 'POST',
       body: bodyContent,
       headers: headersList,
     });
-
+    console.log(response)
     if (!response.ok) {
       if (response.status === 401) {
         alert('Unauthorized: Please check your email and password');
