@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { use, useEffect, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StatusBar, BackHandler, Alert } from 'react-native';
 import configRetriver from 'utils/configRetriver';
 import Feather from '@expo/vector-icons/Feather';
@@ -18,7 +18,7 @@ export const OrderFabricationList = () => {
   useEffect(() => {
     const fetchAuthenticationData = async () => {
       const ret = await configRetriver();
-      console.log('Fetched authentication datas:', ret);
+
       setAuthenticationData(ret);
     };
     fetchAuthenticationData();
@@ -29,6 +29,7 @@ export const OrderFabricationList = () => {
     isLoading: ofisLoading,
     error: oferror,
     isFetching: ofisFetching,
+    refetch: ofrefetch,
   } = useQuery({
     queryKey: [
       'order-fabrication-list',
@@ -37,12 +38,6 @@ export const OrderFabricationList = () => {
       searchDateTo,
     ],
     queryFn: async () => {
-      console.log(
-        'Configuration data inside query function:',
-        configurationData.api_url,
-        searchDateFrom,
-        searchDateTo
-      );
       let headersList = {
         Accept: '*/*',
         'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
@@ -57,7 +52,7 @@ export const OrderFabricationList = () => {
       });
 
       let data = await response.json();
-      console.log('Fetched order fabrication data:', data);
+
       return data;
     },
   });
@@ -67,6 +62,37 @@ export const OrderFabricationList = () => {
     return true;
   });
 
+  const mutateOfData = useMutation({
+    mutationKey: ['mutate-order-fabrication-list'],
+    mutationFn: async (payload: any) => {
+      console.log('Payload for mutation:', payload);
+      let headersList = {
+        Accept: '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+      };
+
+      let response = await fetch(
+        `https://2track-qcms.vercel.app/api/v1/remove_order?id=${payload.id}`,
+        {
+          method: 'DELETE',
+          headers: headersList,
+        }
+      );
+
+      let data = await response.json();
+      console.log(data, 'order fabrication list data');
+      if (data.error) {
+        Alert.alert('Error', 'Failed to remove order fabrication');
+        throw new Error('Failed to remove order fabrication');
+      } else {
+      }
+    },
+    onSuccess: () => {
+      Alert.alert('Success', 'Order fabrication removed successfully');
+      ofrefetch();
+    },
+  });
+
   return (
     <View className="items-center justify-center flex-1 w-full h-full text-black bg-blue-900">
       <View className="flex flex-row items-center justify-between mt-8">
@@ -74,7 +100,7 @@ export const OrderFabricationList = () => {
       </View>
       <View className="flex flex-row items-center justify-between w-11/12 mt-4">
         <SearchState
-          placeholder="Search order fabrications..."
+          placeholder="Enter search query"
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
@@ -82,7 +108,7 @@ export const OrderFabricationList = () => {
           onPress={() => {
             setShowDatePicker(true);
           }}
-          className="flex items-center justify-center flex-1 w-32 h-12 mx-1 text-center rounded-lg bg-blue-custom-1 ">
+          className="flex items-center justify-center flex-1 w-32 h-12 mx-1 text-center bg-gray-500 border-2 border-gray-500 rounded-lg ">
           <Text className="w-full text-lg font-medium text-center text-white ">Date</Text>
         </Pressable>
 
@@ -93,17 +119,16 @@ export const OrderFabricationList = () => {
           onDismiss={() => setShowDatePicker(false)}
           startDate={new Date()}
           endDate={new Date()}
-          onConfirm={({ startDate, endDate }:any) => {
+          onConfirm={({ startDate, endDate }: any) => {
             console.log('Selected date range:', startDate, endDate);
             setShowDatePicker(false);
-
             setSearchDateFrom(new Date(startDate).toISOString().split('T')[0]);
             setSearchDateTo(new Date(endDate).toISOString().split('T')[0]);
           }}
         />
         <Pressable
           onPress={() => {
-            navigation.replace('Dashboard');
+            navigation.replace('NewOrderFabrication');
           }}
           className="flex items-center justify-center flex-1 w-24 h-12 mx-1 my-auto text-center rounded-lg bg-blue-custom-1 ">
           <Text className="w-full text-lg font-medium text-center text-white ">Add</Text>
@@ -145,11 +170,7 @@ export const OrderFabricationList = () => {
                     </View>
                     <View className="flex flex-row items-start ">
                       <Pressable
-                        onPress={() => {
-                          navigation.navigate('OrderFabricationDetails', {
-                            orderFabricationId: customer.id,
-                          });
-                        }}
+                        onPress={async () => {}}
                         className="flex items-center justify-center flex-1 w-32 h-10 mx-4 mt-2 text-center rounded-lg bg-blue-custom-1 ">
                         <Text className="w-full text-sm font-medium text-center text-white ">
                           Edit
@@ -157,14 +178,43 @@ export const OrderFabricationList = () => {
                       </Pressable>
                       <Pressable
                         onPress={() => {
-                          navigation.navigate('OrderFabricationDetails', {
-                            orderFabricationId: customer.id,
-                          });
+                          Alert.alert(
+                            'Confirm Deletion',
+                            'Are you sure you want to delete this order fabrication?',
+                            [
+                              {
+                                text: 'Cancel',
+                                style: 'cancel',
+                              },
+                              {
+                                text: 'Delete',
+                                style: 'destructive',
+                                onPress: () => {
+                                  mutateOfData.mutate({ id: customer.id });
+                                },
+                              },
+                            ]
+                          );
                         }}
+                        disabled={mutateOfData.isPending && mutateOfData.variables?.id === customer.id}
                         className="flex items-center justify-center flex-1 w-32 h-10 mx-4 mt-2 text-center border-2 border-red-500 border-solid rounded-lg ">
-                        <Text className="w-full text-sm font-medium text-center text-black ">
-                          Remove
-                        </Text>
+                        {mutateOfData.isPending && mutateOfData.variables?.id === customer.id ? (
+                          <View className="flex-row items-center justify-center">
+                            <Feather
+                              name="loader"
+                              size={20}
+                              color={'red'}
+                              className="ml-2 animate-spin"
+                            />
+                            <Text className="ml-2 text-sm font-medium text-center text-red-500">
+                              Deleting...
+                            </Text>
+                          </View>
+                        ) : (
+                          <Text className="w-full text-sm font-medium text-center text-red-500 ">
+                            Delete
+                          </Text>
+                        )}
                       </Pressable>
                     </View>
                   </View>

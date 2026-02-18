@@ -9,6 +9,7 @@ import { CustomerManagement } from 'components/CustomerManagement';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { OrderFabricationList } from 'components/OrderFabricationList';
 import { StatusBar } from 'react-native';
+import { NewOrderFabrication } from 'components/NewOrderFabrication';
 
 const RootStack = createNativeStackNavigator({
   initialRouteName: 'LoginScreen',
@@ -45,6 +46,12 @@ const RootStack = createNativeStackNavigator({
     },
     OrderFabricationList: {
       screen: OrderFabricationList, // Placeholder for OrderFabricationList screen
+      options: {
+        headerShown: false,
+      },
+    },
+    NewOrderFabrication: {
+      screen: NewOrderFabrication, // Placeholder for NewOrderFabrication screen
       options: {
         headerShown: false,
       },

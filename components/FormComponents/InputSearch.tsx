@@ -3,17 +3,18 @@ import { View, TextInput, Text, ScrollView, Alert } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 
 export const InputSearch = ({
+  setFieldValue,
+  field,
   values,
+  errors,
+  touched,
   placeholder,
-  textContentType,
   keyboardType,
   autoCapitalize,
-  autoCorrect,
-  autoComplete,
   onChangeText,
-  isSearching,
   children,
 }: any) => {
+  console.log(values, 'values in input search');
   return (
     <View className="w-full mt-4">
       <View
@@ -30,16 +31,15 @@ export const InputSearch = ({
         value={values}
         onPress={() => {
           onChangeText('');
+          setFieldValue(field, '');
         }}
       />
-      {isSearching ? (
-        <View className="flex-row items-center justify-center mt-2">
-          <Feather name="loader" size={20} color="gray" className='animate-spin' />
-          <Text className="ml-2 text-gray-600">Searching...</Text>
-        </View>
-      ) : (
-        <ScrollView className="mt-2 max-h-40">{children}</ScrollView>
-      )}
+
+      <View className={`mt-2 flex-row text-red-500 ${errors && touched ? 'block' : 'hidden'}`}>
+        <Feather className="my-auto" name="alert-triangle" size={20} color="red" />
+        <Text className="my-auto ml-2 text-red-500">{errors}</Text>
+      </View>
+      <ScrollView className="mt-2 max-h-40">{children}</ScrollView>
     </View>
   );
 };
