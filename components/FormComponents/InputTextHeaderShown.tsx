@@ -16,12 +16,12 @@ export const InputTextHeaderShown = ({
   bottomPlaceholder,
 }: any) => {
   return (
-    <View className="w-full mt-4 ">
+    <View className="mt-4 w-full ">
       <View className={` flex-row items-center justify-between text-black`}>
         <Text className="text-gray-600">{placeholder}</Text>
       </View>
       <TextInput
-        className="w-full p-3 mt-4 text-black border border-gray-300 rounded-lg"
+        className="mt-4 w-full rounded-lg border border-black p-3 text-black"
         placeholder={bottomPlaceholder}
         value={values}
         onChangeText={handleChange}

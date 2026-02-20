@@ -14,21 +14,21 @@ export const InputSearch = ({
   onChangeText,
   children,
 }: any) => {
-  console.log(values, 'values in input search');
   return (
     <View className="w-full mt-4">
       <View
         className={`${values == '' ? 'hidden' : 'block'} flex-row items-center justify-between`}>
-        <Text className="text-gray-600">{placeholder}</Text>
+        <Text className="text-black">{placeholder}</Text>
       </View>
       <TextInput
-        className="w-full p-3 mt-4 text-black border border-gray-300 rounded-lg"
+        className="w-full p-3 mt-4 text-black border border-black rounded-lg"
         placeholder={placeholder}
         onChangeText={onChangeText}
         keyboardType={keyboardType || 'default'}
         autoCapitalize={autoCapitalize || 'none'}
         autoCorrect={false}
         value={values}
+        placeholderTextColor={'#000000'}
         onPress={() => {
           onChangeText('');
           setFieldValue(field, '');

@@ -117,6 +117,7 @@ export const OrderFabricationList = () => {
           mode="range"
           visible={showDatePicker}
           onDismiss={() => setShowDatePicker(false)}
+          placeholder="Dataline"
           startDate={new Date()}
           endDate={new Date()}
           onConfirm={({ startDate, endDate }: any) => {
@@ -158,7 +159,7 @@ export const OrderFabricationList = () => {
                       Designation: {customer.tbl_article?.designation_article ?? 'N/A'}
                     </Text>
                     <Text className="text-sm text-gray-600">
-                      Pallete: {customer.pallet_count ?? 'N/A'}
+                      Pallete: {customer.pallete_count ?? 'N/A'}
                     </Text>
                     <View className="flex flex-row items-start ">
                       <Text className="flex-1 text-sm text-gray-600">
@@ -170,7 +171,11 @@ export const OrderFabricationList = () => {
                     </View>
                     <View className="flex flex-row items-start ">
                       <Pressable
-                        onPress={async () => {}}
+                        onPress={async () => {
+                          navigation.replace('EditOrderFabrication', {
+                            order: customer.id,
+                          });
+                        }}
                         className="flex items-center justify-center flex-1 w-32 h-10 mx-4 mt-2 text-center rounded-lg bg-blue-custom-1 ">
                         <Text className="w-full text-sm font-medium text-center text-white ">
                           Edit
@@ -196,7 +201,9 @@ export const OrderFabricationList = () => {
                             ]
                           );
                         }}
-                        disabled={mutateOfData.isPending && mutateOfData.variables?.id === customer.id}
+                        disabled={
+                          mutateOfData.isPending && mutateOfData.variables?.id === customer.id
+                        }
                         className="flex items-center justify-center flex-1 w-32 h-10 mx-4 mt-2 text-center border-2 border-red-500 border-solid rounded-lg ">
                         {mutateOfData.isPending && mutateOfData.variables?.id === customer.id ? (
                           <View className="flex-row items-center justify-center">
@@ -223,6 +230,7 @@ export const OrderFabricationList = () => {
             </View>
           )
         )}
+
       </ScrollView>
     </View>
   );

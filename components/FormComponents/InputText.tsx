@@ -15,19 +15,20 @@ export const InputText = ({
   autoComplete,
 }: any) => {
   return (
-    <View className="w-full mt-4 ">
+    <View className="mt-4 w-full ">
       <View
-        className={`${values == '' ? 'hidden' : 'block'} flex-row items-center text-black justify-between`}>
-        <Text className="text-gray-600">{placeholder}</Text>
+        className={`${values == '' ? 'hidden' : 'block'} flex-row items-center justify-between text-black`}>
+        <Text className="text-black">{placeholder}</Text>
       </View>
       <TextInput
-        className="w-full p-3 mt-4 text-black border border-gray-300 rounded-lg"
+        className="mt-4 w-full rounded-lg border border-black p-3 text-black "
         placeholder={placeholder}
         value={values}
         onChangeText={handleChange}
         keyboardType={keyboardType || 'default'}
         autoCapitalize={autoCapitalize || 'none'}
         autoComplete={autoComplete || 'email'}
+        placeholderTextColor={'black'}
         autoCorrect={false}
         textContentType={textContentType || 'emailAddress'}
       />

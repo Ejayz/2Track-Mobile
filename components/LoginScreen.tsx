@@ -34,7 +34,7 @@ export const LoginScreen = () => {
         const fileExists = await FileSystem.getInfoAsync(authenticationUri);
         if (fileExists.exists) {
           const sessionData = await FileSystem.readAsStringAsync(authenticationUri);
-          console.log('Session Data:', sessionData);
+
           if (sessionData === '{"domain":"2track-qcms.vercel.app","port":""}') {
             Alert.alert(
               'Authentication Error',
@@ -46,19 +46,15 @@ export const LoginScreen = () => {
                   isPreferred: true,
                   onPress: () => {
                     FileSystem.deleteAsync(authenticationUri)
-                      .then(() => {
-                        console.log('Corrupted session data deleted successfully');
-                      })
-                      .catch((error) => {
-                        console.error('Error deleting corrupted session data:', error);
-                      });
+                      .then(() => {})
+                      .catch((error) => {});
                   },
                 },
               ]
             );
             return;
           }
-          console.log('Session Data:', sessionData);
+
           Alert.alert('Welcome Back', 'You are already logged in.', [
             {
               text: 'OK',
@@ -83,10 +79,9 @@ export const LoginScreen = () => {
         if (!configExists.exists) {
           navigation.replace('ConfigurationSetup');
         } else {
-  
           const configData = await FileSystem.readAsStringAsync(configUri);
           const parsedConfig = JSON.parse(configData);
-          console.log('Configuration Data:',configData);
+          console.log('Configuration Data:', configData);
           if (!parsedConfig.api_url) {
             Alert.alert(
               'Configuration Error',
@@ -253,13 +248,13 @@ const authenticate = async (email: string, password: string) => {
       email: email,
       password: password,
     });
-    console.log(parsedConfig.api_url)
+    console.log(parsedConfig.api_url);
     let response = await fetch(`${parsedConfig.api_url}/api/authentication`, {
       method: 'POST',
       body: bodyContent,
       headers: headersList,
     });
-    console.log(response)
+    console.log(response);
     if (!response.ok) {
       if (response.status === 401) {
         alert('Unauthorized: Please check your email and password');

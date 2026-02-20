@@ -16,13 +16,13 @@ export const InputPassword = ({
   checked = false, // Default value for checked
 }: any) => {
   return (
-    <View className="w-full mt-4 ">
+    <View className="mt-4 w-full ">
       <View
         className={`${values == '' ? 'hidden' : 'block'} flex-row items-center justify-between`}>
         <Text className="text-gray-600">{placeholder}</Text>
       </View>
       <TextInput
-        className="w-full p-3 mt-4 text-black border border-gray-300 rounded-lg"
+        className="mt-4 w-full rounded-lg border border-black p-3 text-black"
         placeholder={placeholder || 'Password'}
         secureTextEntry={!checked}
         value={values}
@@ -31,6 +31,7 @@ export const InputPassword = ({
         autoComplete={autoComplete || 'password'}
         autoCorrect={autoCorrect || false}
         textContentType={textContentType || 'password'}
+        placeholderTextColor={'black'}
       />
       <View className={`mt-2 flex-row text-red-500 ${errors && touched ? 'block' : 'hidden'}`}>
         <Feather className="my-auto" name="alert-triangle" size={20} color="red" />
