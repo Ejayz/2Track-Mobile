@@ -7,6 +7,7 @@ import {
   Button,
   GestureResponderEvent,
   Alert,
+  Pressable,
 } from 'react-native';
 import { Checkbox } from '@futurejj/react-native-checkbox';
 import { useEffect, useState } from 'react';
@@ -200,7 +201,8 @@ export const LoginScreen = () => {
               <Checkbox status={checked ? 'checked' : 'unchecked'} onPress={toggleCheckbox} />
               <Text className="inline ml-2 text-gray-600">Show Password</Text>
             </View>
-            <View className="w-full mt-4">
+
+            <View className="w-full mt-4 mb-4">
               {isSubmitting ? (
                 <View className="flex flex-row items-center justify-center">
                   <Feather
@@ -218,6 +220,13 @@ export const LoginScreen = () => {
                 />
               )}
             </View>
+            <Pressable
+              className="flex flex-col w-3/4 h-8 bg-gray-400 rounded-md justify-items-center"
+              onPress={() => {
+                navigation.replace('ConfigurationSetup');
+              }}>
+              <Text className="mx-auto my-auto text-center text-white">Change Server</Text>
+            </Pressable>
           </View>
         </View>
       )}

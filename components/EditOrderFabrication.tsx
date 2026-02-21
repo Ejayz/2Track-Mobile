@@ -22,7 +22,6 @@ export const EditOrderFabrication = ({ route }: any) => {
   const { order } = route.params;
   const [customerName, setCustomerName] = useState<string>('');
   const [articleId, setArticleId] = useState<string>('');
-  const [isCustomerNameSameAsSearch, setIsCustomerNameSameAsSearch] = useState<boolean>(false);
   const [isarticleIdSameAsSearch, setIsArticleIdSameAsSearch] = useState<boolean>(false);
   const navigation: any = useNavigation();
   const [orderArticleId, setOrderArticleId] = useState();
@@ -95,6 +94,7 @@ export const EditOrderFabrication = ({ route }: any) => {
       return data;
     },
   });
+   
 useEffect(() => {
     if (OrderFabricationData) {
       formik.setValues({
@@ -168,8 +168,10 @@ useEffect(() => {
           'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
         };
 
+        
+
         let response = await fetch(
-          `${configurationData.api_url}/api/mobile/getCustomerList?search=${customerName}`,
+          `${configurationData.api_url}/api/v1/get_customers?page=1&search=${customerName}&limit=10`,
           {
             method: 'GET',
             headers: headersList,
@@ -304,7 +306,9 @@ useEffect(() => {
                   </View>
                 </TouchableOpacity>
               ))
-            )}
+            )}  
+      
+
           </InputSearch>
           <InputSearch
             setFieldValue={formik.setFieldValue}
@@ -379,7 +383,7 @@ useEffect(() => {
               {formik.isSubmitting ? (
                 <View className="flex-row items-center justify-center">
                   <Feather name="loader" size={20} color="white" className="animate-spin" />
-                  <Text className="ml-2 text-white">Creating...</Text>
+                  <Text className="ml-2 text-white">Updating...</Text>
                 </View>
               ) : (
                 <Text className="text-lg font-medium text-center text-white">Update</Text>

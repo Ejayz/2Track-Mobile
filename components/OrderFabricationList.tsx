@@ -1,20 +1,32 @@
 import { useNavigation } from '@react-navigation/native';
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { use, useEffect, useState } from 'react';
-import { View, Text, ScrollView, Pressable, StatusBar, BackHandler, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  StatusBar,
+  BackHandler,
+  Alert,
+  Modal,
+} from 'react-native';
 import configRetriver from 'utils/configRetriver';
 import Feather from '@expo/vector-icons/Feather';
 import { SearchState } from './FormComponents/SearchState';
-import { DatePickerModal } from 'react-native-paper-dates';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { datePickerImperative } from 'utils/datePickerImperative';
 export const OrderFabricationList = () => {
   const navigation: any = useNavigation();
 
   const [configurationData, setAuthenticationData] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchDateFrom, setSearchDateFrom] = useState<any>();
-  const [searchDateTo, setSearchDateTo] = useState<any>();
-  const [showDatePicker, setShowDatePicker] = useState(false);
-
+  const [searchDateFrom, setSearchDateFrom] = useState<Date>(new Date());
+  const [searchDateTo, setSearchDateTo] = useState<Date>(new Date());
+  const [modalShow, setModalShow] = useState(false);
+  const [page, setPage] = useState(1);
+  const [order, setOrder] = useState('desc');
+  const [sortBy, setOrderBy] = useState('ofid');
   useEffect(() => {
     const fetchAuthenticationData = async () => {
       const ret = await configRetriver();
@@ -36,6 +48,7 @@ export const OrderFabricationList = () => {
       configurationData !== null && searchQuery,
       searchDateFrom,
       searchDateTo,
+      page,
     ],
     queryFn: async () => {
       let headersList = {
@@ -44,8 +57,8 @@ export const OrderFabricationList = () => {
       };
       const url =
         searchDateFrom && searchDateTo
-          ? `${configurationData.api_url}/api/v1/get_order?page=1&search=${searchQuery}&date_from=${searchDateFrom}&date_to=${searchDateTo}&limit=10`
-          : `${configurationData.api_url}/api/v1/get_order?page=1&search=${searchQuery}&limit=10`;
+          ? `${configurationData.api_url}/api/v1/get_order?page=1&search=${searchQuery}&date_from=${searchDateFrom}&date_to=${searchDateTo}&limit=10&page=${page}&sortBy=${sortBy}&order=${order}`
+          : `${configurationData.api_url}/api/v1/get_order?page=1&search=${searchQuery}&limit=10&page=${page}&sortBy=${sortBy}&order=${order}`;
       let response = await fetch(url, {
         method: 'GET',
         headers: headersList,
@@ -98,7 +111,7 @@ export const OrderFabricationList = () => {
       <View className="flex flex-row items-center justify-between mt-8">
         <Text className="text-xl font-bold text-white">Order Fabrication Management</Text>
       </View>
-      <View className="flex flex-row items-center justify-between w-11/12 mt-4">
+      <View className="flex flex-row items-center justify-between w-11/12 mt-6">
         <SearchState
           placeholder="Enter search query"
           value={searchQuery}
@@ -106,27 +119,52 @@ export const OrderFabricationList = () => {
         />
         <Pressable
           onPress={() => {
-            setShowDatePicker(true);
+            setModalShow(true);
           }}
           className="flex items-center justify-center flex-1 w-32 h-12 mx-1 text-center bg-gray-500 border-2 border-gray-500 rounded-lg ">
-          <Text className="w-full text-lg font-medium text-center text-white ">Date</Text>
+          <Text className="w-full text-lg font-medium text-center text-white ">Filters</Text>
         </Pressable>
+        <Modal
+          visible={modalShow}
+          animationType="slide"
+          transparent
+          onRequestClose={() => {
+            setModalShow(true);
+          }}>
+          <View style={{ flex: 1, justifyContent: 'center', backgroundColor: '#0006' }}>
+            <View style={{ margin: 20, padding: 20, backgroundColor: 'white', height: '70%' }}>
+              <Text className="w-full p-2 font-sans text-2xl font-bold text-center">Filters</Text>
+              <Pressable
+                onPress={() => {
+                  datePickerImperative(searchDateFrom, setSearchDateFrom, 'date', false, 'From');
+                  setModalShow(false);
+                }}
+                className="flex items-center justify-center w-full h-12 my-2 text-center bg-gray-500 border-2 border-gray-500 rounded-lg ">
+                <Text className="w-full text-lg font-medium text-center text-white ">
+                  From Date: {searchDateFrom.toDateString()}
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  datePickerImperative(searchDateTo, setSearchDateTo, 'date', false, 'To');
+                  setModalShow(false);
+                }}
+                className="flex items-center justify-center w-full h-12 my-2 text-center bg-gray-500 border-2 border-gray-500 rounded-lg ">
+                <Text className="w-full text-lg font-medium text-center text-white ">
+                  To Date: {searchDateTo.toDateString()}
+                </Text>
+              </Pressable>
 
-        <DatePickerModal
-          locale="en"
-          mode="range"
-          visible={showDatePicker}
-          onDismiss={() => setShowDatePicker(false)}
-          placeholder="Dataline"
-          startDate={new Date()}
-          endDate={new Date()}
-          onConfirm={({ startDate, endDate }: any) => {
-            console.log('Selected date range:', startDate, endDate);
-            setShowDatePicker(false);
-            setSearchDateFrom(new Date(startDate).toISOString().split('T')[0]);
-            setSearchDateTo(new Date(endDate).toISOString().split('T')[0]);
-          }}
-        />
+              <Pressable
+                onPress={() => {
+                  setModalShow(false);
+                }}
+                className="flex items-center justify-center w-full h-12 my-2 text-center rounded-lg bg-blue-custom-1 ">
+                <Text className="w-full text-lg font-medium text-center text-white ">Close</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
         <Pressable
           onPress={() => {
             navigation.replace('NewOrderFabrication');
@@ -135,7 +173,7 @@ export const OrderFabricationList = () => {
           <Text className="w-full text-lg font-medium text-center text-white ">Add</Text>
         </Pressable>
       </View>
-      <ScrollView className="w-full p-4 text-left">
+      <ScrollView className="w-11/12 mx-auto text-left">
         {ofisLoading || ofisFetching ? (
           <View className="flex-row items-center justify-center mt-2">
             <Feather name="loader" size={24} color={'white'} className="ml-2 animate-spin" />
@@ -230,7 +268,25 @@ export const OrderFabricationList = () => {
             </View>
           )
         )}
-
+        <View className="flex flex-row w-auto mx-auto mt-4 mb-4 justify-items-center ">
+          <Pressable
+            onPress={() => {
+              if (page != 1) {
+                setPage(page - 1);
+              }
+            }}
+            className="w-auto p-4 text-center bg-blue-500 justify-items-center">
+            <Text className="text-lg font-bold text-center ">Prev</Text>
+          </Pressable>
+          <Text></Text>
+          <Pressable
+            onPress={() => {
+              setPage(page + 1);
+            }}
+            className="w-auto p-4 text-center bg-blue-500 ">
+            <Text className="text-lg font-bold text-center">Next</Text>
+          </Pressable>
+        </View>
       </ScrollView>
     </View>
   );
