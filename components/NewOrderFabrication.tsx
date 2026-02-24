@@ -45,7 +45,7 @@ export const NewOrderFabrication = () => {
             headers: headersList,
           }
         );
-
+        console.log(response);
         let data = await response.json();
         return data;
       }
@@ -84,22 +84,6 @@ export const NewOrderFabrication = () => {
     },
   });
 
-  // const {
-  //   data: nofData,
-  //   isPending: nofIsPending,
-  //   error: nofError,
-  //   mutate: nofMutate,
-  //   status: nofStatus,
-  // } = useMutation({
-  //   mutationFn: async (values: any, action: any) => {
-
-  //   },
-  //   onError: (error) => {
-  //     console.log(error);
-  //     alert('Error creating order fabrication');
-  //   },
-  // });
-
   const nofValidationSchema = Yup.object().shape({
     order_id: Yup.number().required('Order ID is required'),
     customer_name: Yup.string().required('Customer Name is required'),
@@ -110,7 +94,7 @@ export const NewOrderFabrication = () => {
   });
 
   return (
-    <View className="items-center justify-center flex-1 bg-white">
+    <View className="flex-1 items-center justify-center bg-white">
       <Text className="text-2xl font-bold text-gray-800">New Order Fabrication</Text>
       <Formik
         validationSchema={nofValidationSchema}
@@ -187,17 +171,17 @@ export const NewOrderFabrication = () => {
               ) : values.customer_name !== '' && customerName !== '' ? (
                 <></>
               ) : customerDataError && customerName !== '' ? (
-                <View className="flex-row items-center justify-center mt-2">
+                <View className="mt-2 flex-row items-center justify-center">
                   <Feather name="x" size={20} color="red" />
                   <Text className="ml-2 text-red-500">Error fetching customer data</Text>
                 </View>
               ) : customerDataIsFetching && customerName !== '' ? (
-                <View className="flex-row items-center justify-center mt-2">
+                <View className="mt-2 flex-row items-center justify-center">
                   <Feather name="loader" size={20} color="gray" className="animate-spin" />
                   <Text className="ml-2 text-gray-600">Searching...</Text>
                 </View>
               ) : customerData.data.length == 0 && customerName !== '' ? (
-                <View className="flex-row items-center justify-center mt-2">
+                <View className="mt-2 flex-row items-center justify-center">
                   <Feather name="x" size={20} color="red" />
                   <Text className="ml-2 text-red-500">No customers found</Text>
                 </View>
@@ -205,7 +189,7 @@ export const NewOrderFabrication = () => {
                 customerData.data.map((customer: any, index: number) => (
                   <TouchableOpacity
                     key={index}
-                    className="flex-row items-center p-2 border-b border-gray-200"
+                    className="flex-row items-center border-b border-gray-200 p-2"
                     onPress={() => {
                       if (customerName !== customer.company_name) {
                         setFieldValue('customer_name', customer.id);
@@ -242,17 +226,17 @@ export const NewOrderFabrication = () => {
               ) : values.article_id !== '' && articleId !== '' ? (
                 <></>
               ) : articleIdDataError && articleId !== '' ? (
-                <View className="flex-row items-center justify-center mt-2">
+                <View className="mt-2 flex-row items-center justify-center">
                   <Feather name="x" size={20} color="red" />
                   <Text className="ml-2 text-red-500">Error fetching customer data</Text>
                 </View>
               ) : articleIdDataIsFetching && articleId !== '' ? (
-                <View className="flex-row items-center justify-center mt-2">
+                <View className="mt-2 flex-row items-center justify-center">
                   <Feather name="loader" size={20} color="gray" className="animate-spin" />
                   <Text className="ml-2 text-gray-600">Searching...</Text>
                 </View>
               ) : articleIdData.data.length == 0 && articleId !== '' ? (
-                <View className="flex-row items-center justify-center mt-2">
+                <View className="mt-2 flex-row items-center justify-center">
                   <Feather name="x" size={20} color="red" />
                   <Text className="ml-2 text-red-500">No articles found</Text>
                 </View>
@@ -260,7 +244,7 @@ export const NewOrderFabrication = () => {
                 articleIdData.data.map((article: any, index: number) => (
                   <TouchableOpacity
                     key={index}
-                    className="flex-row items-center p-2 border-b border-gray-200"
+                    className="flex-row items-center border-b border-gray-200 p-2"
                     onPress={() => {
                       if (article.article.toString() !== articleId) {
                         setFieldValue('article_id', article.id);
@@ -293,20 +277,20 @@ export const NewOrderFabrication = () => {
             <View className="mt-4">
               <Pressable
                 onPress={() => handleSubmit()}
-                className="w-full p-3 text-white rounded-lg bg-blue-custom-1">
+                className="w-full rounded-lg bg-blue-custom-1 p-3 text-white">
                 {isSubmitting ? (
                   <View className="flex-row items-center justify-center">
                     <Feather name="loader" size={20} color="white" className="animate-spin" />
                     <Text className="ml-2 text-white">Creating...</Text>
                   </View>
                 ) : (
-                  <Text className="text-lg font-medium text-center text-white">Create</Text>
+                  <Text className="text-center text-lg font-medium text-white">Create</Text>
                 )}
               </Pressable>
               <Pressable
                 onPress={() => navigation.replace('Dashboard')}
-                className="w-full p-3 mt-2 text-gray-700 border border-gray-300 rounded-lg">
-                <Text className="text-lg font-medium text-center text-gray-700">Cancel</Text>
+                className="mt-2 w-full rounded-lg border border-gray-300 p-3 text-gray-700">
+                <Text className="text-center text-lg font-medium text-gray-700">Cancel</Text>
               </Pressable>
             </View>
           </View>

@@ -4,6 +4,7 @@ import authenticationRetriver from 'utils/authenticationRetriver';
 import { useEffect, useState } from 'react';
 const corexlogo = require('../assets/img/corex1.png');
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 export const DashboardUI = () => {
   const navigation: any = useNavigation();
 
@@ -29,7 +30,7 @@ export const DashboardUI = () => {
         Lets get you started with managing CoreX. Please select one of the options below to begin.
       </Text>
       <View className="flex flex-col justify-center gap-6 mt-5 ">
-        <Pressable
+        {/* <Pressable
           onPress={() => {
             navigation.navigate('CustomerManagement');
           }}
@@ -43,21 +44,32 @@ export const DashboardUI = () => {
           <Text className="w-auto mx-auto text-lg font-medium text-center text-white">
             Article Creation
           </Text>
+        </Pressable> */}
+        <Pressable
+          className="flex flex-col w-2/5 h-auto p-2 mx-auto text-center rounded-lg bg-blue-custom-1 "
+          onPress={() => {
+            navigation.replace('NewOrderFabrication');
+          }}>
+          <Ionicons name="add-sharp" className="mx-auto" size={55} color="white" />
+          <Text className="w-auto mx-auto text-lg font-medium text-center text-white">
+            New Order Fabrication
+          </Text>
         </Pressable>
         <Pressable
-          className="flex flex-row w-3/4 h-auto p-2 text-center rounded-lg bg-blue-custom-1 "
+          className="flex flex-col w-2/5 h-auto p-2 mx-auto text-center rounded-lg bg-blue-custom-1"
           onPress={() => {
             navigation.replace('OrderFabricationList');
           }}>
+          <MaterialIcons name="shopping-cart" className="mx-auto" size={55} color="white" />
           <Text className="w-auto mx-auto text-lg font-medium text-center text-white">
-            Order Fabrication Management
+            Order Fabrication List
           </Text>
         </Pressable>
-        <Pressable className="flex flex-row w-3/4 h-auto p-2 text-center rounded-lg bg-blue-custom-1 ">
+        {/* <Pressable className="flex flex-row w-3/4 h-auto p-2 text-center rounded-lg bg-blue-custom-1 ">
           <Text className="w-auto mx-auto text-lg font-medium text-center text-white">
             Statistical Analysis
           </Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     </View>
   );

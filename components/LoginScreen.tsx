@@ -8,6 +8,8 @@ import {
   GestureResponderEvent,
   Alert,
   Pressable,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Checkbox } from '@futurejj/react-native-checkbox';
 import { useEffect, useState } from 'react';
@@ -185,6 +187,7 @@ export const LoginScreen = () => {
               autoCorrect={false}
               keyboardType="email-address"
             />
+
             <InputPassword
               values={values.password}
               handleChange={handleChange('password')}
@@ -197,6 +200,7 @@ export const LoginScreen = () => {
               autoComplete="password"
               autoCorrect={false}
             />
+
             <View className="flex-row items-center w-full mt-4">
               <Checkbox status={checked ? 'checked' : 'unchecked'} onPress={toggleCheckbox} />
               <Text className="inline ml-2 text-gray-600">Show Password</Text>

@@ -19,7 +19,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as Yup from 'yup';
 
 export const EditOrderFabrication = ({ route }: any) => {
-  const { order } = route.params;
+  console.log(route)
   const [customerName, setCustomerName] = useState<string>('');
   const [articleId, setArticleId] = useState<string>('');
   const [isarticleIdSameAsSearch, setIsArticleIdSameAsSearch] = useState<boolean>(false);
@@ -46,17 +46,20 @@ export const EditOrderFabrication = ({ route }: any) => {
     },
     onSubmit: async (values) => {
       const configData = await configRetriver();
-      const response = await fetch(`${configData.api_url}/api/v1/edit_order?id=${order}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          article_id: `${values.article_id}`,
-          customer_id: parseInt(values.customer_name),
-          order_fabrication_control: `${values.order_id}`,
-          pallete_count: parseInt(values.pallet_count),
-        }),
-      });
-      console.log(response);
+      const response = await fetch(
+        `${configData.api_url}/api/v1/edit_order?id=${route.params.id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            article_id: `${values.article_id}`,
+            customer_id: parseInt(values.customer_name),
+            order_fabrication_control: `${values.order_id}`,
+            pallete_count: parseInt(values.pallet_count),
+          }),
+        }
+      );
+
       if (response.ok) {
         Alert.alert('Success', 'Order updated successfully', [
           {
@@ -75,7 +78,7 @@ export const EditOrderFabrication = ({ route }: any) => {
     error: OrderFabricationDataError,
     isFetching: OrderFabricationIsFetching,
   } = useQuery({
-    queryKey: ['order-fabrication-data', order],
+    queryKey: ['order-fabrication-data', route.params.id],
     queryFn: async () => {
       const configData = await configRetriver();
 
@@ -84,30 +87,42 @@ export const EditOrderFabrication = ({ route }: any) => {
         'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
       };
 
-      let response = await fetch(`${configData.api_url}/api/v1/get_order_by_id?id=${order}`, {
-        method: 'GET',
-        headers: headersList,
-      });
+      let response = await fetch(
+        `${configData.api_url}/api/v1/get_order_by_id?id=${route.params.id}`,
+        {
+          method: 'GET',
+          headers: headersList,
+        }
+      );
 
       let data = await response.json();
-
+      console.log(data);
       return data;
     },
   });
-   
-useEffect(() => {
-    if (OrderFabricationData) {
-      formik.setValues({
-        order_id: `${OrderFabricationData[0].order_fabrication_control}`,
-        article_id: OrderFabricationData[0].article_id,
-        customer_name: OrderFabricationData[0].customer_id,
-        pallet_count: `${OrderFabricationData[0].pallete_count}`,
-      });
-      setOrderArticleId(OrderFabricationData[0].article_id);
-    }
-  }, [OrderFabricationData]);
 
- 
+  useEffect(() => {
+    if (route.params.article_id) {
+      formik.setValues({
+        order_id: route.params.order_fabrication_id,
+        article_id: `${route.params.article_id}`,
+        customer_name: route.params.customer_name,
+        pallet_count: `${route.params.pallete_count}`,
+      });
+      setCustomerName(route.params.customer_name);
+      setArticleId(`${route.params.article_id}`);
+    } else {
+      formik.setValues({
+        order_id: route.params.order_fabrication_id,
+        article_id: route.params.article_id ?? '',
+        customer_name: route.params.customer_name,
+        pallet_count: route.params.pallete_count,
+      });
+      setCustomerName(route.params.customer_name);
+      setArticleId(route.params.article_id);
+    }
+  }, [route]);
+
   const {
     data: ArticleData,
     error: ArticleError,
@@ -115,43 +130,35 @@ useEffect(() => {
   } = useQuery({
     queryKey: ['article-data-search', orderArticleId],
     queryFn: async () => {
-      try {
-        let headersList = {
-          Accept: '*/*',
-          'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-        };
-        let response = await fetch(
-          `https://2track-qcms.vercel.app/api/v1/getonearticleprod?id=${orderArticleId}`,
-          {
-            method: 'GET',
-            headers: headersList,
-          }
-        );
+      const configData = await configRetriver();
+      if (orderArticleId == null || orderArticleId == undefined) {
+        return [];
+      } else {
+        try {
+          let headersList = {
+            Accept: '*/*',
+            'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+          };
+          let response = await fetch(
+            `${configData.api_url}/api/v1/getonearticleprod?id=${orderArticleId}`,
+            {
+              method: 'GET',
+              headers: headersList,
+            }
+          );
 
-        let data = await response.json();
-        return data;
-      } catch (error) {
-        throw new Error('Error');
+          let data = await response.json();
+          console.log('Article', data);
+          return data;
+        } catch (error) {
+          throw new Error('Error');
 
-        return error;
+          return error;
+        }
       }
     },
   });
- useEffect(() => {
-    if (ArticleData && OrderFabricationData) {
-      formik.setValues({
-        order_id: `${OrderFabricationData[0].order_fabrication_control}`,
-        article_id: OrderFabricationData[0].article_id,
-        customer_name: OrderFabricationData[0].customer_id,
-        pallet_count: `${OrderFabricationData[0].pallete_count}`,
-      });
-      console.log(ArticleError);
-      if (!ArticleError) {
-        setArticleId(`${ArticleData[0].article}`);
-        setCustomerName(ArticleData[0].article_name);
-      }
-    }
-  }, [ArticleData]);
+
   const {
     data: customerData,
     error: customerDataError,
@@ -159,27 +166,30 @@ useEffect(() => {
   } = useQuery({
     queryKey: ['customer-name-search', customerName],
     queryFn: async () => {
-      if (customerName == '') {
-        return { data: [] };
-      } else {
-        const configurationData = await configRetriver();
-        let headersList = {
-          Accept: '*/*',
-          'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-        };
+      try {
+        if (customerName == '') {
+          return { data: [] };
+        } else {
+          const configurationData = await configRetriver();
+          let headersList = {
+            Accept: '*/*',
+            'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+          };
 
-        
+          let response = await fetch(
+            `${configurationData.api_url}/api/v1/get_customers?page=1&search=${customerName}&limit=10`,
+            {
+              method: 'GET',
+              headers: headersList,
+            }
+          );
 
-        let response = await fetch(
-          `${configurationData.api_url}/api/v1/get_customers?page=1&search=${customerName}&limit=10`,
-          {
-            method: 'GET',
-            headers: headersList,
-          }
-        );
-
-        let data = await response.json();
-        return data;
+          let data = await response.json();
+          return data;
+        }
+      } catch (err) {
+        console.log(err);
+        return 0;
       }
     },
   });
@@ -191,49 +201,60 @@ useEffect(() => {
   } = useQuery({
     queryKey: ['product-name-search', articleId],
     queryFn: async () => {
-      if (articleId == '') {
-        return { data: [] };
-      } else {
-        const configurationData = await configRetriver();
-        let headersList = {
-          Accept: '*/*',
-          'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-        };
+      try {
+        if (articleId == '') {
+          return { data: [] };
+        } else {
+          const configurationData = await configRetriver();
+          let headersList = {
+            Accept: '*/*',
+            'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+          };
 
-        let response = await fetch(
-          `${configurationData.api_url}/api/v1/get_article_prod_options?search=${articleId}&limit=50`,
-          {
-            method: 'GET',
-            headers: headersList,
-          }
-        );
+          let response = await fetch(
+            `${configurationData.api_url}/api/v1/get_article_prod_options?search=${articleId}&limit=50`,
+            {
+              method: 'GET',
+              headers: headersList,
+            }
+          );
 
-        let data = await response.json();
-
-        return data;
+          let data = await response.json();
+          console.log('Article Data:', data);
+          return data;
+        }
+      } catch (e) {
+        console.log(e);
+        return 0;
       }
     },
   });
 
-  
-
-  return order == '' ? (
+  return route.params == '' ? (
     <></>
-  ) : order !== '' && OrderFabricationIsFetching ? (
-    <View className="flex flex-row items-center w-full h-full bg-blue-900 justify-items-center">
-      <Feather name="loader" size={20} color="white" className="animate-spin" />
-      <Text className="mx-auto my-auto text-lg text-white ">
-        Fetching order fabrication
-        <Text className="font-bold "> {order} </Text>
-        data ...
-      </Text>
+  ) : route.params !== '' && OrderFabricationIsFetching ? (
+    <View className="flex flex-col items-center w-full h-full bg-blue-900 justify-items-center">
+      <View className="flex flex-col mx-auto my-auto ">
+        <Feather name="loader" size={20} color="white" className="mx-auto animate-spin" />
+        <Text className="mx-auto my-auto text-lg text-white ">
+          Fetching order fabrication
+          <Text className="font-bold "> {route.params.order_fabrication_id} </Text>
+          data ...
+        </Text>
+      </View>
     </View>
-  ) : order !== '' && ArticleIsFetching ? (
-    <View className="flex flex-row items-center w-full h-full bg-blue-900 justify-items-center">
-      <Feather name="loader" size={20} color="white" className="animate-spin" />
-      <Text className="mx-auto my-auto text-lg text-white ">Fetching article data</Text>
+  ) : route.params !== '' && ArticleIsFetching ? (
+    <View className="flex flex-col items-center w-full h-full bg-blue-900 justify-items-center">
+      <View className="flex flex-col mx-auto my-auto ">
+        <Feather name="loader" size={20} color="white" className="mx-auto animate-spin" />
+        <Text className="mx-auto my-auto text-lg text-white ">
+          Fetching article
+          <Text className="font-bold "> {route.params.order_fabrication_id} </Text>
+          data ...
+        </Text>
+      </View>
     </View>
-  ) : order !== '' && OrderFabricationData ? (
+  ) : route.params !== '' && OrderFabricationData ? (
     <View className="items-center justify-center flex-1 bg-white">
       <Text className="text-2xl font-bold text-gray-800">New Order Fabrication</Text>
       <FormikProvider value={formik}>
@@ -306,9 +327,7 @@ useEffect(() => {
                   </View>
                 </TouchableOpacity>
               ))
-            )}  
-      
-
+            )}
           </InputSearch>
           <InputSearch
             setFieldValue={formik.setFieldValue}

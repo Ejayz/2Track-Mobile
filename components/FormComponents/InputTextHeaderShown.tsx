@@ -16,12 +16,12 @@ export const InputTextHeaderShown = ({
   bottomPlaceholder,
 }: any) => {
   return (
-    <View className="mt-4 w-full ">
+    <View className="w-full mt-4 ">
       <View className={` flex-row items-center justify-between text-black`}>
         <Text className="text-gray-600">{placeholder}</Text>
       </View>
       <TextInput
-        className="mt-4 w-full rounded-lg border border-black p-3 text-black"
+        className="w-full p-3 mt-4 text-black border border-black rounded-lg"
         placeholder={bottomPlaceholder}
         value={values}
         onChangeText={handleChange}
@@ -29,6 +29,7 @@ export const InputTextHeaderShown = ({
         autoCapitalize={autoCapitalize || 'none'}
         autoComplete={autoComplete || 'email'}
         autoCorrect={false}
+        placeholderTextColor={"black"}
         textContentType={textContentType || 'emailAddress'}
       />
 

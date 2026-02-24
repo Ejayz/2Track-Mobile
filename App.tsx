@@ -11,6 +11,9 @@ import { OrderFabricationList } from 'components/OrderFabricationList';
 import { StatusBar } from 'react-native';
 import { NewOrderFabrication } from 'components/NewOrderFabrication';
 import { EditOrderFabrication } from 'components/EditOrderFabrication';
+import { MeasurementList } from 'components/MeasurementList';
+import { NewMeasurement } from 'components/NewMeasurement';
+import { EditMeasurement } from 'components/EditMeasurement';
 
 const RootStack = createNativeStackNavigator({
   initialRouteName: 'LoginScreen',
@@ -57,12 +60,30 @@ const RootStack = createNativeStackNavigator({
         headerShown: false,
       },
     },
-    EditOrderFabrication:{
-      screen:EditOrderFabrication,
-      options:{
-        headerShown:false
-      }
-    }
+    EditOrderFabrication: {
+      screen: EditOrderFabrication,
+      options: {
+        headerShown: false,
+      },
+    },
+    MeasurementList: {
+      screen: MeasurementList,
+      options: {
+        headerShown: false,
+      },
+    },
+    NewMeasurement: {
+      screen: NewMeasurement,
+      options: {
+        headerShown: false,
+      },
+    },
+    EditMeasurement: {
+      screen: EditMeasurement,
+      options: {
+        headerShown: false,
+      },
+    },
   },
 });
 

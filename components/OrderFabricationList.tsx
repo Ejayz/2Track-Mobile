@@ -14,7 +14,6 @@ import {
 import configRetriver from 'utils/configRetriver';
 import Feather from '@expo/vector-icons/Feather';
 import { SearchState } from './FormComponents/SearchState';
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { datePickerImperative } from 'utils/datePickerImperative';
 export const OrderFabricationList = () => {
   const navigation: any = useNavigation();
@@ -26,7 +25,7 @@ export const OrderFabricationList = () => {
   const [modalShow, setModalShow] = useState(false);
   const [page, setPage] = useState(1);
   const [order, setOrder] = useState('desc');
-  const [sortBy, setOrderBy] = useState('ofid');
+  const [sortBy, setOrderBy] = useState('');
   useEffect(() => {
     const fetchAuthenticationData = async () => {
       const ret = await configRetriver();
@@ -165,13 +164,13 @@ export const OrderFabricationList = () => {
             </View>
           </View>
         </Modal>
-        <Pressable
+        {/* <Pressable
           onPress={() => {
             navigation.replace('NewOrderFabrication');
           }}
           className="flex items-center justify-center flex-1 w-24 h-12 mx-1 my-auto text-center rounded-lg bg-blue-custom-1 ">
           <Text className="w-full text-lg font-medium text-center text-white ">Add</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
       <ScrollView className="w-11/12 mx-auto text-left">
         {ofisLoading || ofisFetching ? (
@@ -210,11 +209,30 @@ export const OrderFabricationList = () => {
                     <View className="flex flex-row items-start ">
                       <Pressable
                         onPress={async () => {
-                          navigation.replace('EditOrderFabrication', {
-                            order: customer.id,
+                          navigation.replace('MeasurementList', {
+                              order: customer.ofid,
+                              ofid: customer.id,
                           });
                         }}
-                        className="flex items-center justify-center flex-1 w-32 h-10 mx-4 mt-2 text-center rounded-lg bg-blue-custom-1 ">
+                        className="flex items-center justify-center flex-1 w-32 h-10 mx-2 mt-2 text-center rounded-lg bg-blue-custom-1 ">
+                        <Text className="w-full text-sm font-medium text-center text-white ">
+                          Measurement
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={async () => {
+                          console.log(customer)
+
+                          navigation.replace('EditOrderFabrication', {
+                            id:customer.id,
+                            order_fabrication_id:customer.ofid,
+                            customer_name:customer.tbl_customer.company_name,
+                            customer_id:customer.tbl_customer.customer_id,
+                            article_id:customer.article_id,
+                            pallete_count:customer.pallete_count
+                          });
+                        }}
+                        className="flex items-center justify-center flex-1 w-32 h-10 mx-2 mt-2 text-center rounded-lg bg-blue-custom-1 ">
                         <Text className="w-full text-sm font-medium text-center text-white ">
                           Edit
                         </Text>
@@ -242,7 +260,7 @@ export const OrderFabricationList = () => {
                         disabled={
                           mutateOfData.isPending && mutateOfData.variables?.id === customer.id
                         }
-                        className="flex items-center justify-center flex-1 w-32 h-10 mx-4 mt-2 text-center border-2 border-red-500 border-solid rounded-lg ">
+                        className="flex items-center justify-center flex-1 w-32 h-10 mx-2 mt-2 text-center border-2 border-red-500 border-solid rounded-lg ">
                         {mutateOfData.isPending && mutateOfData.variables?.id === customer.id ? (
                           <View className="flex-row items-center justify-center">
                             <Feather

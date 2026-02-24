@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@futurejj/react-native-checkbox": "^1.0.3",
+    "@good-react-native/keyboard-avoider": "^1.1.4",
     "@react-native-community/cli": "^18.0.0",
     "@react-native-community/datetimepicker": "8.4.1",
     "@react-navigation/bottom-tabs": "^7.4.1",
