@@ -21,14 +21,14 @@ export const SearchState = ({
         <Text className="text-gray-600">{placeholder}</Text>
       </View> */}
       <TextInput
-        className="w-full rounded-lg border border-black p-3 text-black "
+        className="w-full p-3 text-white border border-white rounded-lg "
         placeholder={placeholder}
         onChangeText={onChangeText}
         keyboardType={keyboardType || 'default'}
         autoCapitalize={autoCapitalize || 'none'}
         autoCorrect={false}
         value={values}
-        placeholderTextColor={'black'}
+        placeholderTextColor={'white'}
         onPress={() => {
           onChangeText('');
         }}

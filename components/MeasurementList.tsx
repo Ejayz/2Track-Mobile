@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import configRetriver from 'utils/configRetriver';
 import Feather from '@expo/vector-icons/Feather';
+import { forEach } from 'eslint.config';
 
 export const MeasurementList = ({ route }: any) => {
   const navigation: any = useNavigation();
@@ -49,7 +50,9 @@ export const MeasurementList = ({ route }: any) => {
       });
 
       let data = await response.json();
-      return data;
+      const data2 = await processData(data);
+
+      return data2;
     },
   });
 
@@ -79,13 +82,13 @@ export const MeasurementList = ({ route }: any) => {
       console.log(data, 'order fabrication list data');
       console.log(data);
       if (data.error) {
-        Alert.alert('Error', 'Failed to remove order fabrication');
-        throw new Error('Failed to remove order fabrication');
+        Alert.alert('Error', 'Failed to remove pallete.');
+        throw new Error('Failed to remove pallete.');
       } else {
       }
     },
     onSuccess: () => {
-      Alert.alert('Success', 'Order fabrication removed successfully');
+      Alert.alert('Success', 'Pallete deleted successfully');
       ofrefetch();
     },
   });
@@ -110,7 +113,7 @@ export const MeasurementList = ({ route }: any) => {
           </View>
         ) : oferror ? (
           <Text>Error fetching customer data: {oferror.message}</Text>
-        ) : ofdata.length == 0 ? (
+        ) : ofdata?.length == 0 ? (
           <View className="flex-row items-center justify-center mt-2">
             {/* <Feather name="loader" size={24} color={'white'} className="ml-2 animate-spin" /> */}
             <Text>No measurement data found.</Text>
@@ -118,43 +121,89 @@ export const MeasurementList = ({ route }: any) => {
         ) : (
           ofdata && (
             <View>
-              {ofdata.map((customer: any) => {
+              {ofdata.map((customer: any, key: number) => {
                 return (
-                  <View key={customer.id} className="w-full p-2 mt-2 bg-white rounded-lg shadow ">
+                  <View key={key} className="w-full p-2 mt-2 bg-white rounded-lg shadow ">
                     <Text className="text-lg font-medium text-gray-800">
-                      Pallete # : {customer.palette_num}
+                      Pallete No.: {customer.palette_num}
                     </Text>
                     <Text className="text-sm text-gray-600">
-                      Length: {customer.length ?? 'N/A'}
+                      {customer.items
+                        .filter(
+                          (item: any) =>
+                            item.length !== null && item.length !== undefined && item.length !== ''
+                        )
+                        .map((item: any, key: any) => {
+                          console.log(key, customer.items.length);
+                          const incrementKey = key + 1;
+                          return (
+                            <>
+                              <Text className="font-bold">{`Length ${incrementKey} :`}</Text>
+                              <Text>{` ${item.length}${customer.items.length == incrementKey ? `` : `\r\n`}`}</Text>
+                            </>
+                          );
+                        })}
                     </Text>
                     <Text className="text-sm text-gray-600">
-                      Inside Diameter: {customer.inside_diameter ?? 'N/A'}
+                      <Text className="font-bold">Inside Diameter: </Text>
+                      {customer.items
+                        .filter(
+                          (item: any) =>
+                            item.length !== null &&
+                            item.inside_diameter !== undefined &&
+                            item.inside_diameter !== ''
+                        )
+                        .map((item: any) => item.inside_diameter)}
                     </Text>
                     <Text className="text-sm text-gray-600">
-                      Outside Diameter: {customer.outside_diameter ?? 'N/A'}
+                      <Text className="font-bold">Outside Diameter: </Text>
+                      {customer.items
+                        .filter(
+                          (item: any) =>
+                            item.length !== null &&
+                            item.outside_diameter !== undefined &&
+                            item.outside_diameter !== ''
+                        )
+                        .map((item: any) => item.outside_diameter)}
                     </Text>
                     <Text className="text-sm text-gray-600">
-                      Flat Crush: {customer.flat_crush ?? 'N/A'}
+                      <Text className="font-bold">Flat Crush: </Text>
+                      {customer.items
+                        .filter(
+                          (item: any) =>
+                            item.length !== null &&
+                            item.flat_crush !== undefined &&
+                            item.flat_crush !== ''
+                        )
+                        .map((item: any) => item.flat_crush)}
                     </Text>
-                    <Text className="text-sm text-gray-600">H20: {customer.h2o ?? 'N/A'}</Text>
                     <Text className="text-sm text-gray-600">
-                      Remarks: {customer.remarks ?? 'N/A'}
+                      <Text className="font-bold">H20:</Text>
+                      {customer.items
+                        .filter(
+                          (item: any) =>
+                            item.length !== null && item.h2o !== undefined && item.h20 !== ''
+                        )
+                        .map((item: any) => item.h2o)}
+                    </Text>
+                    <Text className="text-sm text-gray-600">
+                      <Text className="font-bold">Remarks:</Text>
+                      {customer.items
+                        .filter(
+                          (item: any) =>
+                            item.length !== null &&
+                            item.remarks !== undefined &&
+                            item.flat_crush !== ''
+                        )
+                        .map((item: any) => item.remarks)}
                     </Text>
                     <View className="flex flex-row items-start ">
                       <Pressable
                         onPress={async () => {
                           navigation.replace('EditMeasurement', {
-                            id: customer.id,
-                            length: customer.length,
-                            inside_diameter: customer.inside_diameter,
-                            outside_diameter: customer.outside_diameter,
-                            flat_crush: customer.flat_crush,
-                            h20: customer.h2o,
-                            number_control: 0,
-                            remarks: customer.remarks,
-                            pallete_count: parseInt(customer.palette_num),
-                            user_id: null,
+                            data: customer.items,
                             order: route.params.order,
+                            pallete: customer.palette_num,
                           });
                         }}
                         className="flex items-center justify-center flex-1 w-32 h-10 mx-4 mt-2 text-center rounded-lg bg-blue-custom-1 ">
@@ -166,7 +215,7 @@ export const MeasurementList = ({ route }: any) => {
                         onPress={() => {
                           Alert.alert(
                             'Confirm Deletion',
-                            'Are you sure you want to delete this order fabrication?',
+                            'Are you sure you want to delete this pallete? All measurement would be deleted.',
                             [
                               {
                                 text: 'Cancel',
@@ -176,7 +225,9 @@ export const MeasurementList = ({ route }: any) => {
                                 text: 'Delete',
                                 style: 'destructive',
                                 onPress: () => {
-                                  mutateOfData.mutate({ id: customer.id });
+                                  customer.items.map((data: any, keys: any) => {
+                                    mutateOfData.mutate({ id: data.id });
+                                  });
                                 },
                               },
                             ]
@@ -225,3 +276,29 @@ export const MeasurementList = ({ route }: any) => {
     </View>
   );
 };
+
+async function processData(data: any[]) {
+  const grouped = data.reduce(
+    (acc, item) => {
+      const { palette_num, ...rest } = item;
+
+      const existing = acc.find((g: any) => g.palette_num === palette_num);
+
+      if (existing) {
+        existing.items.push(rest);
+      } else {
+        acc.push({
+          palette_num,
+          items: [rest],
+        });
+      }
+
+      return acc;
+    },
+    [] as {
+      palette_num: number;
+      items: Omit<(typeof data)[number], 'palette_num'>[];
+    }[]
+  );
+  return grouped;
+}

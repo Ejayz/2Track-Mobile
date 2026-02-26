@@ -56,8 +56,8 @@ export const OrderFabricationList = () => {
       };
       const url =
         searchDateFrom && searchDateTo
-          ? `${configurationData.api_url}/api/v1/get_order?page=1&search=${searchQuery}&date_from=${searchDateFrom}&date_to=${searchDateTo}&limit=10&page=${page}&sortBy=${sortBy}&order=${order}`
-          : `${configurationData.api_url}/api/v1/get_order?page=1&search=${searchQuery}&limit=10&page=${page}&sortBy=${sortBy}&order=${order}`;
+          ? `${configurationData.api_url}/api/v1/get_order?search=${searchQuery}&date_from=${searchDateFrom}&date_to=${searchDateTo}&limit=10&page=${page}&sortBy=${sortBy}&order=${order}`
+          : `${configurationData.api_url}/api/v1/get_order?search=${searchQuery}&limit=10&page=${page}&sortBy=${sortBy}&order=${order}`;
       let response = await fetch(url, {
         method: 'GET',
         headers: headersList,
@@ -176,10 +176,10 @@ export const OrderFabricationList = () => {
         {ofisLoading || ofisFetching ? (
           <View className="flex-row items-center justify-center mt-2">
             <Feather name="loader" size={24} color={'white'} className="ml-2 animate-spin" />
-            <Text>Loading customer data...</Text>
+            <Text className='text-white'>Loading customer data...</Text>
           </View>
         ) : oferror ? (
-          <Text>Error fetching customer data: {oferror.message}</Text>
+          <Text className='text-white'>Error fetching customer data: {oferror.message}</Text>
         ) : (
           ofdata && (
             <View>
@@ -291,6 +291,8 @@ export const OrderFabricationList = () => {
             onPress={() => {
               if (page != 1) {
                 setPage(page - 1);
+              }else{
+               
               }
             }}
             className="w-auto p-4 text-center bg-blue-500 justify-items-center">
@@ -298,8 +300,11 @@ export const OrderFabricationList = () => {
           </Pressable>
           <Text></Text>
           <Pressable
+         
             onPress={() => {
+               
               setPage(page + 1);
+              console.log(page)
             }}
             className="w-auto p-4 text-center bg-blue-500 ">
             <Text className="text-lg font-bold text-center">Next</Text>
