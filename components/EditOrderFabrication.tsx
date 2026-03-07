@@ -3,9 +3,6 @@ import { use, useEffect, useState } from 'react';
 import {
   View,
   Text,
-  Button,
-  TextInput,
-  GestureResponderEvent,
   TouchableOpacity,
   Pressable,
   Alert,
@@ -19,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as Yup from 'yup';
 
 export const EditOrderFabrication = ({ route }: any) => {
-  console.log(route)
+  console.log(route);
   const [customerName, setCustomerName] = useState<string>('');
   const [articleId, setArticleId] = useState<string>('');
   const [isarticleIdSameAsSearch, setIsArticleIdSameAsSearch] = useState<boolean>(false);
@@ -64,7 +61,10 @@ export const EditOrderFabrication = ({ route }: any) => {
         Alert.alert('Success', 'Order updated successfully', [
           {
             text: 'OK',
-            onPress: () => navigation.replace('OrderFabricationList'),
+            onPress: () =>
+              navigation.replace('OrderFabricationList', {
+                page: route.params.page,
+              }),
           },
         ]);
       } else {
@@ -409,7 +409,11 @@ export const EditOrderFabrication = ({ route }: any) => {
               )}
             </Pressable>
             <Pressable
-              onPress={() => navigation.replace('OrderFabricationList')}
+              onPress={() =>
+                navigation.replace('OrderFabricationList', {
+                  page: route.params.page,
+                })
+              }
               className="w-full p-3 mt-2 text-gray-700 border border-gray-300 rounded-lg">
               <Text className="text-lg font-medium text-center text-gray-700">Cancel</Text>
             </Pressable>

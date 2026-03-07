@@ -17,6 +17,7 @@ import configRetriver from 'utils/configRetriver';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import * as Yup from 'yup';
+import { fetchWithRetry } from 'utils/fetchRetry';
 export const NewMeasurement = ({ route }: any) => {
   const navigation: any = useNavigation();
 
@@ -55,7 +56,9 @@ export const NewMeasurement = ({ route }: any) => {
           validationSchema={nofValidationSchema}
           initialValues={{
             pallete_number: '',
-            length: '',
+            length1: '',
+            length2: '',
+            length3: '',
             inside_diameter: '',
             outside_diameter: '',
             flat_crush: '',
@@ -70,30 +73,38 @@ export const NewMeasurement = ({ route }: any) => {
               'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
               'Content-Type': 'application/json',
             };
-            console.log(route.params);
-            let bodyContent = JSON.stringify({
-              order_id: parseInt(route.params.ofid),
-              ofid: `${route.params.order}`,
-              length: `${values.length}`,
-              inside_diameter: `${values.inside_diameter}`,
-              outside_diameter: `${values.outside_diameter}`,
-              flat_crush: `${values.flat_crush}`,
-              h20: `${values.h20}`,
-              number_control: 0,
-              remarks: `${values.remarks}`,
-              pallete_count: parseInt(values.pallete_number),
-              user_id: null,
-            });
-            console.log(bodyContent);
-            let response = await fetch(`${configurationData.api_url}/api/v1/create_measurement`, {
-              method: 'POST',
-              body: bodyContent,
-              headers: headersList,
-            });
-            console.log(response);
-            let data = await response.json();
-            console.log(data);
-            if (response.ok) {
+
+            const lengths = [values.length1, values.length2, values.length3];
+
+            const ok = await Promise.all(
+              lengths.map((length, index) => {
+                const data = JSON.stringify({
+                  order_id: parseInt(route.params.ofid),
+                  ofid: `${route.params.order}`,
+                  length: `${length}`,
+                  inside_diameter: index === 0 ? `${values.inside_diameter}` : ``,
+                  outside_diameter: index === 0 ? `${values.outside_diameter}` : ``,
+                  flat_crush: index === 0 ? `${values.flat_crush}` : ``,
+                  h20: index === 0 ? `${values.h20}` : ``,
+                  number_control: 0,
+                  remarks: index === 0 ? `${values.remarks}` : ``,
+                  pallete_count: parseInt(values.pallete_number),
+                  user_id: null,
+                });
+
+                return fetchWithRetry(
+                  `${configurationData.api_url}/api/v1/create_measurement`,
+                  {
+                    method: 'POST',
+                    body: data,
+                    headers: headersList,
+                  },
+                  3
+                );
+              })
+            );
+
+            if (ok) {
               action.resetForm();
               alert('Order fabrication created successfully');
               navigation.replace('MeasurementList', {
@@ -126,11 +137,35 @@ export const NewMeasurement = ({ route }: any) => {
                 keyboardType="numeric"
               />
               <InputText
-                values={values.length}
-                handleChange={handleChange('length')}
-                errors={errors.length}
-                touched={touched.length}
-                placeholder="Length"
+                values={values.length1}
+                handleChange={handleChange('length1')}
+                errors={errors.length1}
+                touched={touched.length1}
+                placeholder="Length 1"
+                textContentType="numeric"
+                autoCapitalize="none"
+                autoComplete="off"
+                autoCorrect={false}
+                keyboardType="numeric"
+              />
+              <InputText
+                values={values.length2}
+                handleChange={handleChange('length2')}
+                errors={errors.length2}
+                touched={touched.length2}
+                placeholder="Length 2"
+                textContentType="numeric"
+                autoCapitalize="none"
+                autoComplete="off"
+                autoCorrect={false}
+                keyboardType="numeric"
+              />
+              <InputText
+                values={values.length3}
+                handleChange={handleChange('length3')}
+                errors={errors.length3}
+                touched={touched.length3}
+                placeholder="Length 3"
                 textContentType="numeric"
                 autoCapitalize="none"
                 autoComplete="off"
@@ -215,6 +250,7 @@ export const NewMeasurement = ({ route }: any) => {
                   onPress={() =>
                     navigation.replace('MeasurementList', {
                       order: route.params.order,
+                      page: route.params.page,
                     })
                   }
                   className="w-full p-3 mt-2 text-gray-700 border border-gray-300 rounded-lg">

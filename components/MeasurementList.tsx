@@ -16,6 +16,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { forEach } from 'eslint.config';
 
 export const MeasurementList = ({ route }: any) => {
+  console.log(route.params)
   const navigation: any = useNavigation();
   const [configurationData, setAuthenticationData] = useState<any>(null);
 
@@ -51,6 +52,7 @@ export const MeasurementList = ({ route }: any) => {
 
       let data = await response.json();
       const data2 = await processData(data);
+      console.log(JSON.stringify(data2));
 
       return data2;
     },
@@ -136,13 +138,12 @@ export const MeasurementList = ({ route }: any) => {
                             item.length !== null && item.length !== undefined && item.length !== ''
                         )
                         .map((item: any, key: any) => {
-                          console.log(key, customer.items.length);
                           const incrementKey = key + 1;
                           return (
-                            <>
+                            <Text key={incrementKey}>
                               <Text className="font-bold">{`Length ${incrementKey} :`}</Text>
                               <Text>{` ${item.length}${customer.items.length == incrementKey ? `` : `\r\n`}`}</Text>
-                            </>
+                            </Text>
                           );
                         })}
                     </Text>
@@ -270,6 +271,7 @@ export const MeasurementList = ({ route }: any) => {
           navigation.replace('NewMeasurement', {
             ofid: route.params.ofid,
             order: route.params.order,
+            page:route.params.page
           });
         }}
         className="w-auto p-4 mt-2 mb-4 text-center bg-blue-500 rounded-lg ">
@@ -280,27 +282,24 @@ export const MeasurementList = ({ route }: any) => {
 };
 
 async function processData(data: any[]) {
-  const grouped = data.reduce(
-    (acc, item) => {
-      const { palette_num, ...rest } = item;
+  const groupsMap = new Map<number, any[]>();
 
-      const existing = acc.find((g: any) => g.palette_num === palette_num);
+  for (const item of data) {
+    if (!groupsMap.has(item.palette_num)) {
+      groupsMap.set(item.palette_num, []);
+    }
+    groupsMap.get(item.palette_num)!.push(item);
+  }
 
-      if (existing) {
-        existing.items.push(rest);
-      } else {
-        acc.push({
-          palette_num,
-          items: [rest],
-        });
-      }
+  const grouped = Array.from(groupsMap.entries()).map(([palette_num, items]) => {
+    const minId = Math.min(...items.map((item) => item.id));
 
-      return acc;
-    },
-    [] as {
-      palette_num: number;
-      items: Omit<(typeof data)[number], 'palette_num'>[];
-    }[]
-  );
+    return {
+      palette_num,
+      order_id: minId,
+      items: items,
+    };
+  });
+  grouped.sort((a, b) => b.order_id - a.order_id);
   return grouped;
 }
