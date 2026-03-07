@@ -24,17 +24,32 @@ export const NewMeasurement = ({ route }: any) => {
     pallete_number: Yup.number()
       .typeError('Pallete number must be a valid number')
       .required('Pallete number is required'),
-    length: Yup.number().typeError('Length must be a valid number'),
-    inside_diameter: Yup.number().typeError('Inside diameter must be a valid number'),
-    outside_diameter: Yup.number().typeError('Outside diameter must be a valid number'),
-    flat_crush: Yup.number().typeError('Flat crush must be a valid number'),
-    h20: Yup.number().typeError('H20 must be a valid number'),
+    length: Yup.number()
+      .nullable()
+      .transform((value, originalValue) => (originalValue === '' ? null : value))
+      .typeError('Length must be a valid number'),
+    inside_diameter: Yup.number()
+      .nullable()
+      .transform((value, originalValue) => (originalValue === '' ? null : value))
+      .typeError('Inside diameter must be a valid number'),
+    outside_diameter: Yup.number()
+      .nullable()
+      .transform((value, originalValue) => (originalValue === '' ? null : value))
+      .typeError('Outside diameter must be a valid number'),
+    flat_crush: Yup.number()
+      .nullable()
+      .transform((value, originalValue) => (originalValue === '' ? null : value))
+      .typeError('Flat crush must be a valid number'),
+    h20: Yup.number()
+      .nullable()
+      .transform((value, originalValue) => (originalValue === '' ? null : value))
+      .typeError('H20 must be a valid number'),
     remarks: Yup.string().nullable().max(255, 'Remarks must not exceed 255 characters'),
   });
 
   return (
     <View className="items-center justify-center flex-1 bg-white">
-      <Text className="text-2xl font-bold text-gray-800">New Measurement</Text>
+      <Text className="mt-4 text-2xl font-bold text-gray-800">OF ID:{route.params.order}</Text>
       <ScrollView className="w-full bg-white">
         <Formik
           validationSchema={nofValidationSchema}
@@ -77,7 +92,7 @@ export const NewMeasurement = ({ route }: any) => {
             });
             console.log(response);
             let data = await response.json();
-
+            console.log(data);
             if (response.ok) {
               action.resetForm();
               alert('Order fabrication created successfully');
