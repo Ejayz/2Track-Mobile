@@ -99,7 +99,9 @@ export const MeasurementList = ({ route }: any) => {
         <Text className="text-xl font-bold text-white">PALLET MEASUREMENT</Text>
         <Pressable
           onPress={() => {
-            navigation.replace('OrderFabricationList');
+            navigation.replace('OrderFabricationList', {
+              page: route.params.page,
+            });
           }}
           className="flex items-center justify-center w-24 h-12 mx-1 my-auto text-center rounded-lg bg-blue-custom-1 ">
           <Text className="w-full text-lg font-medium text-center text-white ">BACK</Text>

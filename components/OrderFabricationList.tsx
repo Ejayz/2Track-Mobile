@@ -15,7 +15,7 @@ import configRetriver from 'utils/configRetriver';
 import Feather from '@expo/vector-icons/Feather';
 import { SearchState } from './FormComponents/SearchState';
 import { datePickerImperative } from 'utils/datePickerImperative';
-export const OrderFabricationList = () => {
+export const OrderFabricationList = ({ route }: any) => {
   const navigation: any = useNavigation();
 
   const [configurationData, setAuthenticationData] = useState<any>(null);
@@ -23,7 +23,7 @@ export const OrderFabricationList = () => {
   const [searchDateFrom, setSearchDateFrom] = useState<Date>(new Date());
   const [searchDateTo, setSearchDateTo] = useState<Date>(new Date());
   const [modalShow, setModalShow] = useState(false);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(route.params?.page ?? 1);
   const [order, setOrder] = useState('desc');
   const [sortBy, setOrderBy] = useState('');
   useEffect(() => {
@@ -176,10 +176,10 @@ export const OrderFabricationList = () => {
         {ofisLoading || ofisFetching ? (
           <View className="flex-row items-center justify-center mt-2">
             <Feather name="loader" size={24} color={'white'} className="ml-2 animate-spin" />
-            <Text className='text-white'>Loading customer data...</Text>
+            <Text className="text-white">Loading customer data...</Text>
           </View>
         ) : oferror ? (
-          <Text className='text-white'>Error fetching customer data: {oferror.message}</Text>
+          <Text className="text-white">Error fetching customer data: {oferror.message}</Text>
         ) : (
           ofdata && (
             <View>
@@ -210,8 +210,9 @@ export const OrderFabricationList = () => {
                       <Pressable
                         onPress={async () => {
                           navigation.replace('MeasurementList', {
-                              order: customer.ofid,
-                              ofid: customer.id,
+                            order: customer.ofid,
+                            ofid: customer.id,
+                            page: page,
                           });
                         }}
                         className="flex items-center justify-center flex-1 w-32 h-10 mx-2 mt-2 text-center rounded-lg bg-blue-custom-1 ">
@@ -221,15 +222,16 @@ export const OrderFabricationList = () => {
                       </Pressable>
                       <Pressable
                         onPress={async () => {
-                          console.log(customer)
+                          console.log(customer);
 
                           navigation.replace('EditOrderFabrication', {
-                            id:customer.id,
-                            order_fabrication_id:customer.ofid,
-                            customer_name:customer.tbl_customer.company_name,
-                            customer_id:customer.tbl_customer.customer_id,
-                            article_id:customer.article_id,
-                            pallete_count:customer.pallete_count
+                            id: customer.id,
+                            order_fabrication_id: customer.ofid,
+                            customer_name: customer.tbl_customer.company_name,
+                            customer_id: customer.tbl_customer.customer_id,
+                            article_id: customer.article_id,
+                            pallete_count: customer.pallete_count,
+                            page: page,
                           });
                         }}
                         className="flex items-center justify-center flex-1 w-32 h-10 mx-2 mt-2 text-center rounded-lg bg-blue-custom-1 ">
@@ -286,28 +288,25 @@ export const OrderFabricationList = () => {
             </View>
           )
         )}
-        <View className="flex flex-row w-auto mx-auto mt-4 mb-4 justify-items-center ">
+        <View className="flex flex-row w-auto mx-auto mt-4 mb-4 text-white justify-items-center ">
           <Pressable
             onPress={() => {
               if (page != 1) {
                 setPage(page - 1);
-              }else{
-               
+              } else {
               }
             }}
             className="w-auto p-4 text-center bg-blue-500 justify-items-center">
-            <Text className="text-lg font-bold text-center ">Prev</Text>
+            <Text className="text-lg font-bold text-center text-white">Prev</Text>
           </Pressable>
-          <Text></Text>
+          <Text className='p-4 my-auto text-2xl font-bold text-white'>Page {page}</Text>
           <Pressable
-         
             onPress={() => {
-               
               setPage(page + 1);
-              console.log(page)
+              console.log(page);
             }}
             className="w-auto p-4 text-center bg-blue-500 ">
-            <Text className="text-lg font-bold text-center">Next</Text>
+            <Text className="text-lg font-bold text-center text-white">Next</Text>
           </Pressable>
         </View>
       </ScrollView>
