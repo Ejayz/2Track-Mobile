@@ -16,7 +16,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { forEach } from 'eslint.config';
 
 export const MeasurementList = ({ route }: any) => {
-  console.log(route.params)
+  console.log(route.params);
   const navigation: any = useNavigation();
   const [configurationData, setAuthenticationData] = useState<any>(null);
 
@@ -52,8 +52,7 @@ export const MeasurementList = ({ route }: any) => {
 
       let data = await response.json();
       const data2 = await processData(data);
-      console.log(JSON.stringify(data2));
-
+      console.log(JSON.stringify(data2))
       return data2;
     },
   });
@@ -66,7 +65,6 @@ export const MeasurementList = ({ route }: any) => {
   const mutateOfData = useMutation({
     mutationKey: ['mutate-measurement-list'],
     mutationFn: async (payload: any) => {
-      console.log('Payload for mutation:', payload);
       let headersList = {
         Accept: '*/*',
         'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
@@ -81,8 +79,7 @@ export const MeasurementList = ({ route }: any) => {
       );
 
       let data = await response.json();
-      console.log(data, 'order fabrication list data');
-      console.log(data);
+
       if (data.error) {
         Alert.alert('Error', 'Failed to remove pallete.');
         throw new Error('Failed to remove pallete.');
@@ -113,14 +110,14 @@ export const MeasurementList = ({ route }: any) => {
         {ofisLoading || ofisFetching ? (
           <View className="flex-row items-center justify-center mt-2">
             <Feather name="loader" size={24} color={'white'} className="ml-2 animate-spin" />
-            <Text>Loading customer data...</Text>
+            <Text className='text-white'>Loading customer data...</Text>
           </View>
         ) : oferror ? (
           <Text>Error fetching customer data: {oferror.message}</Text>
         ) : ofdata?.length == 0 ? (
           <View className="flex-row items-center justify-center mt-2">
             {/* <Feather name="loader" size={24} color={'white'} className="ml-2 animate-spin" /> */}
-            <Text>No measurement data found.</Text>
+            <Text className='text-white'>No measurement data found.</Text>
           </View>
         ) : (
           ofdata && (
@@ -191,14 +188,14 @@ export const MeasurementList = ({ route }: any) => {
                     </Text>
                     <Text className="text-sm text-gray-600">
                       <Text className="font-bold">Remarks:</Text>
-                      {customer.items
-                        .filter(
+                      {
+                        customer.items.find(
                           (item: any) =>
                             item.length !== null &&
                             item.remarks !== undefined &&
-                            item.flat_crush !== ''
-                        )
-                        .map((item: any) => item.remarks)}
+                            item.remarks !== ''
+                        )?.remarks
+                      }
                     </Text>
                     <View className="flex flex-row items-start ">
                       <Pressable
@@ -207,6 +204,7 @@ export const MeasurementList = ({ route }: any) => {
                             data: customer.items,
                             order: route.params.order,
                             pallete: customer.palette_num,
+                            page: route.params.page,
                           });
                         }}
                         className="flex items-center justify-center flex-1 w-32 h-10 mx-4 mt-2 text-center rounded-lg bg-blue-custom-1 ">
@@ -271,7 +269,7 @@ export const MeasurementList = ({ route }: any) => {
           navigation.replace('NewMeasurement', {
             ofid: route.params.ofid,
             order: route.params.order,
-            page:route.params.page
+            page: route.params.page,
           });
         }}
         className="w-auto p-4 mt-2 mb-4 text-center bg-blue-500 rounded-lg ">

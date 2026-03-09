@@ -1,12 +1,12 @@
-export async function fetchWithRetry(url:any, options:any, maxRetries = 3) {
+export async function fetchWithRetry(url: any, options: any, maxRetries = 3) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const response = await fetch(url, options);
-
+      const jsonData = await response.json();
       if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
+        throw new Error(`HTTP error ${response.status}} Message: ${JSON.stringify(jsonData)}`);
       }
-
+      console.log(jsonData);
       return response;
     } catch (error) {
       if (attempt === maxRetries) {
@@ -17,4 +17,3 @@ export async function fetchWithRetry(url:any, options:any, maxRetries = 3) {
     }
   }
 }
-
