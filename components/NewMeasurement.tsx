@@ -25,7 +25,15 @@ export const NewMeasurement = ({ route }: any) => {
     pallete_number: Yup.number()
       .typeError('Pallete number must be a valid number')
       .required('Pallete number is required'),
-    length: Yup.number()
+    length1: Yup.number()
+      .nullable()
+      .transform((value, originalValue) => (originalValue === '' ? null : value))
+      .typeError('Length must be a valid number'),
+    length2: Yup.number()
+      .nullable()
+      .transform((value, originalValue) => (originalValue === '' ? null : value))
+      .typeError('Length must be a valid number'),
+    length3: Yup.number()
       .nullable()
       .transform((value, originalValue) => (originalValue === '' ? null : value))
       .typeError('Length must be a valid number'),

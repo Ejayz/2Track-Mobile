@@ -1,10 +1,11 @@
-import { View, Text, Button, Image, StyleSheet, Pressable, StatusBar } from 'react-native';
+import { View, Text, Button, Image, StyleSheet, Pressable, StatusBar, Alert } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import authenticationRetriver from 'utils/authenticationRetriver';
 import { useEffect, useState } from 'react';
 const corexlogo = require('../assets/img/corex1.png');
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import * as FileSystem from 'expo-file-system';
 export const DashboardUI = () => {
   const navigation: any = useNavigation();
 
@@ -65,11 +66,24 @@ export const DashboardUI = () => {
             Order Fabrication List
           </Text>
         </Pressable>
-        {/* <Pressable className="flex flex-row w-3/4 h-auto p-2 text-center rounded-lg bg-blue-custom-1 ">
-          <Text className="w-auto mx-auto text-lg font-medium text-center text-white">
-            Statistical Analysis
-          </Text>
-        </Pressable> */}
+        <Pressable
+          className="flex flex-col w-2/5 h-auto px-16 py-6 mx-auto text-center rounded-lg bg-blue-custom-1"
+          onPress={async () => {
+            const fileUri = `${FileSystem.documentDirectory}authentication.json`;
+
+            try {
+              await FileSystem.deleteAsync(fileUri);
+              Alert.alert('Logged out successfully.');
+              navigation.replace('LoginScreen');
+            } catch (e) {
+              Alert.alert(
+                'There was a problem logging out . Failed to delete session . Please clear the application data to logout.'
+              );
+            }
+          }}>
+          <AntDesign name="logout" className="mx-auto" size={55} color="white" />
+          <Text className="w-auto mx-auto text-lg font-medium text-center text-white">Logout</Text>
+        </Pressable>
       </View>
     </View>
   );
