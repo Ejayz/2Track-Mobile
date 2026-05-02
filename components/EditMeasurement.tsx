@@ -12,7 +12,7 @@ export const EditMeasurement = ({ route }: any) => {
   const navigation: any = useNavigation();
 
   useEffect(() => {
-    console.log(route.params);
+    console.log('Test Data ', route.params.data);
   }, [route]);
 
   // Validation schema for array items
@@ -91,9 +91,12 @@ export const EditMeasurement = ({ route }: any) => {
           initialValues={{
             id: route.params.id,
             pallete_number: `${route.params.pallete ?? ''}`,
-            length1: { data: `${route.params.data[0].length ?? ''}`, id: route.params.data[0].id },
-            length2: { data: `${route.params.data[1].length ?? ''}`, id: route.params.data[1].id },
-            length3: { data: `${route.params.data[2].length ?? ''}`, id: route.params.data[2].id },
+            length1: {
+              data: `${route.params.data[0].length == undefined || route.params.data[0].length == null || route.params.data[0].length == '' ? '' : route.params.data[0].length}`,
+              id: route.params.data[0].id,
+            },
+            length2: { data: `${route.params.data[1].length == undefined || route.params.data[1].length == null || route.params.data[1].length == '' ? '' : route.params.data[1].length}`, id: route.params.data[1].id },
+            length3: { data: `${route.params.data[2].length == undefined || route.params.data[2].length == null || route.params.data[2].length == '' ? '' : route.params.data[2].length}`, id: route.params.data[2].id },
             inside_diameter: `${
               route.params.data
                 .filter(
@@ -101,7 +104,8 @@ export const EditMeasurement = ({ route }: any) => {
                     item.length !== null &&
                     item.inside_diameter !== undefined &&
                     item.inside_diameter !== '' &&
-                    item.inside_diameter !== null
+                    item.inside_diameter !== null &&
+                    item.remarks !== 'undefined'
                 )
                 .map((item: any) => item.outside_diameter) ?? ''
             }`,
@@ -112,7 +116,8 @@ export const EditMeasurement = ({ route }: any) => {
                     item.length !== null &&
                     item.outside_diameter !== undefined &&
                     item.outside_diameter !== '' &&
-                    item.outside_diameter !== null
+                    item.outside_diameter !== null &&
+                    item.remarks !== 'undefined'
                 )
                 .map((item: any) => item.outside_diameter) ?? ''
             }`,
@@ -123,7 +128,8 @@ export const EditMeasurement = ({ route }: any) => {
                     item.length !== null &&
                     item.flat_crush !== undefined &&
                     item.flat_crush !== '' &&
-                    item.flat_crush !== null
+                    item.flat_crush !== null &&
+                    item.remarks !== 'undefined'
                 )
                 .map((item: any) => item.flat_crush) ?? ''
             }`,
@@ -134,18 +140,22 @@ export const EditMeasurement = ({ route }: any) => {
                     item.length !== null &&
                     item.h2o !== undefined &&
                     item.h2o !== '' &&
-                    item.h2o !== null
+                    item.h2o !== null &&
+                    item.remarks !== 'undefined'
                 )
                 .map((item: any) => item.h2o) ?? ''
             }`,
             remarks: `${
-              route.params.data.find(
-                (item: any) =>
-                  item.length !== null &&
-                  item.remarks !== undefined &&
-                  item.remarks !== '' &&
-                  item.remarks !== null
-              )?.remarks
+              route.params.data
+                .filter(
+                  (item: any) =>
+                    item.length !== null &&
+                    item.remarks !== undefined &&
+                    item.remarks !== '' &&
+                    item.remarks !== null &&
+                    item.remarks !== 'undefined'
+                )
+                .map((item: any) => item.remarks) ?? ''
             }`,
           }}
           enableReinitialize
